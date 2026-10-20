@@ -1,0 +1,3343 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0B253A" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="بطل الحساب السريع" />
+  <title>بطل الحساب السريع - كراج الأبطال</title>
+  <link rel="manifest" href="manifest.json" id="manifest-link" />
+  <!-- Google Fonts: Tajawal & IBM Plex Sans Arabic with immediate offline system-ui fallbacks -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=Tajawal:wght@500;700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ==========================================================================
+       100% OFFLINE-SAFE CSS & SAUDI / HEJAZI RED SEA ART DIRECTION
+       Deep Sea Navy, Red Sea Turquoise/Teal, Al-Balad Coral Red, Sandy Beige,
+       Restrained Gold, and Crisp Warm Off-White.
+       Zero letter-spacing so Arabic ligatures never break.
+       ========================================================================== */
+    :root {
+      --navy-deep: #0B253A;
+      --navy-surface: #10324D;
+      --navy-card: #153E5C;
+      --navy-border: #25557A;
+      --teal-primary: #00A896;
+      --teal-dark: #028090;
+      --teal-deep: #05668D;
+      --coral-accent: #E05A47;
+      --coral-dark: #B83D2B;
+      --sand-cream: #F7F1E5;
+      --sand-warm: #EADBC8;
+      --sand-border: #D5C2A5;
+      --gold-highlight: #E9B44C;
+      --gold-dark: #B88628;
+      --text-white: #FDFBF7;
+      --text-cream: #F2E8D5;
+      --text-muted: #A9C2D6;
+      --text-dark: #0B253A;
+      --font-ar: 'Tajawal', 'IBM Plex Sans Arabic', system-ui, -apple-system, 'Segoe UI', Tahoma, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      letter-spacing: 0 !important; /* Critical for unbroken Arabic script */
+      font-family: var(--font-ar);
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
+      overflow: hidden;
+      background-color: var(--navy-deep);
+      color: var(--text-white);
+      direction: rtl;
+      text-align: right;
+      line-height: 1.48;
+      touch-action: manipulation;
+    }
+
+    button:focus-visible, input:focus-visible {
+      outline: 3px solid var(--gold-highlight);
+      outline-offset: 2px;
+    }
+
+    /* Main Viewport Container */
+    #app-shell {
+      position: relative;
+      width: 100%;
+      max-width: 680px;
+      height: 100dvh;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      background: var(--navy-deep);
+      box-shadow: 0 0 48px rgba(0, 0, 0, 0.7);
+      overflow: hidden;
+    }
+
+    /* ==========================================================================
+       TOP HUD (RTL Driver Card, 3 Hearts, Speedometer, Controls & Question)
+       ========================================================================== */
+    #top-hud {
+      position: relative;
+      z-index: 20;
+      background: var(--navy-surface);
+      border-bottom: 2px solid var(--navy-border);
+      padding: 6px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      box-shadow: 0 4px 14px rgba(7, 22, 36, 0.45);
+      flex-shrink: 0;
+    }
+
+    .hud-row-1 {
+      display: grid;
+      grid-template-columns: 1.25fr auto 1.15fr;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Driver License Card */
+    .driver-card {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--navy-deep);
+      border: 1.5px solid var(--navy-border);
+      border-radius: 12px;
+      padding: 4px 8px;
+      min-width: 0;
+    }
+
+    #hud-car-icon {
+      width: 34px;
+      height: 44px;
+      flex-shrink: 0;
+      border-radius: 7px;
+      background: var(--navy-surface);
+      border: 1px solid var(--navy-border);
+    }
+
+    .driver-meta {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .driver-name-line {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: var(--sand-cream);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.25;
+    }
+
+    .driver-badges {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 2px;
+      flex-wrap: nowrap;
+    }
+
+    .badge-pill {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 6px;
+      background: var(--navy-card);
+      color: var(--text-cream);
+      white-space: nowrap;
+    }
+
+    .badge-trophy {
+      background: rgba(233, 180, 76, 0.18);
+      border: 1px solid var(--gold-highlight);
+      color: var(--gold-highlight);
+    }
+
+    /* Center 3-Lives Heart Panel */
+    .hearts-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--navy-deep);
+      border: 1.5px solid var(--navy-border);
+      border-radius: 12px;
+      padding: 3px 9px;
+    }
+
+    .hearts-row {
+      display: flex;
+      gap: 3px;
+      font-size: 1.02rem;
+      line-height: 1.1;
+    }
+
+    .heart-icon {
+      transition: transform 0.25s ease, opacity 0.25s ease;
+      display: inline-block;
+    }
+
+    .heart-icon.lost {
+      opacity: 0.22;
+      transform: scale(0.75);
+      filter: grayscale(1);
+    }
+
+    .hearts-label {
+      font-size: 0.66rem;
+      font-weight: 700;
+      color: var(--text-cream);
+      margin-top: 1px;
+    }
+
+    /* Digital Speedometer Box */
+    .speedo-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--navy-deep);
+      border: 2px solid var(--teal-primary);
+      border-radius: 12px;
+      padding: 3px 8px;
+      transition: border-color 0.2s, background-color 0.2s;
+    }
+
+    .speedo-box.nitro-active {
+      border-color: var(--gold-highlight);
+      background: rgba(233, 180, 76, 0.12);
+    }
+
+    .speedo-box.slow-active {
+      border-color: var(--coral-accent);
+      background: rgba(224, 90, 71, 0.14);
+    }
+
+    .speedo-value-row {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    #hud-speed-num {
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: var(--teal-primary);
+      line-height: 1.1;
+    }
+
+    #hud-speed-unit {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    #hud-speed-compare {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--gold-highlight);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    /* Educational Speed Explanation Ribbon */
+    #edu-speed-ribbon {
+      background: var(--navy-deep);
+      border: 1px solid var(--navy-border);
+      border-radius: 8px;
+      padding: 2px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--sand-cream);
+    }
+
+    #edu-speed-text {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+    }
+
+    #edu-status-pill {
+      font-size: 0.68rem;
+      font-weight: 800;
+      padding: 1px 8px;
+      border-radius: 999px;
+      background: rgba(0, 168, 150, 0.16);
+      color: var(--teal-primary);
+      border: 1px solid var(--teal-primary);
+      white-space: nowrap;
+    }
+
+    /* HUD Row 2: Utility Buttons + Sandy Cream Question Gantry Banner */
+    .hud-row-2 {
+      display: flex;
+      align-items: stretch;
+      gap: 6px;
+    }
+
+    .hud-Quick-btns {
+      display: flex;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+
+    .btn-3d-icon {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+      padding: 4px 6px;
+      border-radius: 10px;
+      border: 1.5px solid var(--navy-border);
+      background: var(--navy-card);
+      color: var(--text-white);
+      font-size: 0.66rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 3px 0 var(--navy-deep);
+      transition: transform 0.08s, box-shadow 0.08s, background-color 0.15s;
+    }
+
+    .btn-3d-icon:hover {
+      background: #1C4E73;
+    }
+
+    .btn-3d-icon span.ico {
+      font-size: 0.98rem;
+      line-height: 1.05;
+    }
+
+    .btn-3d-icon:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 var(--navy-deep);
+    }
+
+    /* Warm Sandy Cream Question Banner */
+    .question-gantry {
+      flex: 1;
+      background: var(--sand-cream);
+      border: 2px solid var(--gold-highlight);
+      border-radius: 12px;
+      box-shadow: 0 3px 0 var(--gold-dark);
+      padding: 3px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      min-height: 50px;
+    }
+
+    .question-header-row {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .q-title-badge {
+      font-size: 0.68rem;
+      font-weight: 800;
+      background: var(--teal-deep);
+      color: var(--text-white);
+      padding: 2px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+
+    #hud-question-eq {
+      font-size: 1.45rem;
+      font-weight: 900;
+      color: var(--text-dark);
+      line-height: 1.15;
+      direction: rtl;
+      text-align: center;
+      flex: 1;
+    }
+
+    /* Visual Counting Dots for Beginner / Under-6 Division */
+    #hud-counting-dots {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 2px;
+      min-height: 14px;
+      direction: rtl;
+    }
+
+    .dot-group {
+      display: flex;
+      gap: 3px;
+      align-items: center;
+      background: rgba(11, 37, 58, 0.08);
+      padding: 2px 6px;
+      border-radius: 999px;
+    }
+
+    .count-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .count-dot.dot-a {
+      background: var(--coral-accent);
+      border: 1px solid var(--coral-dark);
+    }
+
+    .count-dot.dot-b {
+      background: var(--teal-primary);
+      border: 1px solid var(--teal-deep);
+    }
+
+    .dot-plus {
+      font-size: 0.75rem;
+      font-weight: 900;
+      color: var(--text-dark);
+    }
+
+    /* ==========================================================================
+       CENTER RACE TRACK CANVAS AREA (Jeddah Corniche & Al-Balad Circuit)
+       ========================================================================== */
+    #track-stage {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      overflow: hidden;
+      background: #0D5C75;
+    }
+
+    #race-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Floating Feedback Toast (Saudi/Hejazi Conversational Encouragement) */
+    #race-toast {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%) scale(0.92);
+      z-index: 15;
+      padding: 8px 18px;
+      border-radius: 14px;
+      font-size: 1rem;
+      font-weight: 800;
+      text-align: center;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      box-shadow: 0 8px 22px rgba(7, 22, 36, 0.55);
+      border: 2px solid var(--sand-cream);
+      max-width: 92%;
+    }
+
+    #race-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) scale(1);
+    }
+
+    #race-toast.toast-good {
+      background: var(--teal-primary);
+      color: var(--text-white);
+      border-color: var(--sand-cream);
+    }
+
+    #race-toast.toast-bad {
+      background: var(--coral-accent);
+      color: var(--text-white);
+      border-color: var(--sand-warm);
+    }
+
+    /* ==========================================================================
+       BOTTOM COCKPIT TRAY (Spatially Consistent Steering + 3 Tactile Lane Cards)
+       ========================================================================== */
+    #bottom-cockpit {
+      position: relative;
+      z-index: 20;
+      background: var(--navy-surface);
+      border-top: 2px solid var(--navy-border);
+      padding: 7px 8px calc(8px + env(safe-area-inset-bottom, 0px));
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      box-shadow: 0 -4px 16px rgba(7, 22, 36, 0.5);
+      flex-shrink: 0;
+    }
+
+    /* Explicit physical LTR container so Left Steer is physically on Left
+       and Right Steer is physically on Right, matching the 3 physical canvas lanes */
+    .cockpit-controls-row {
+      display: grid;
+      grid-template-columns: 74px 1fr 74px;
+      gap: 7px;
+      direction: ltr;
+      align-items: stretch;
+    }
+
+    .steer-btn {
+      border-radius: 12px;
+      border: 1.5px solid #48CAE4;
+      background: var(--teal-deep);
+      color: var(--text-white);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 4px;
+      cursor: pointer;
+      box-shadow: 0 4px 0 var(--navy-deep);
+      transition: transform 0.08s, box-shadow 0.08s, background-color 0.15s;
+      direction: rtl;
+    }
+
+    .steer-btn:hover {
+      background: var(--teal-dark);
+    }
+
+    .steer-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 var(--navy-deep);
+    }
+
+    .steer-arrow {
+      font-size: 1.35rem;
+      line-height: 1;
+    }
+
+    .steer-label {
+      font-size: 0.78rem;
+      font-weight: 800;
+      margin-top: 2px;
+    }
+
+    /* 3 Lane Tactile Answer Cards (Coordinated Coral, Teal, and Navy-Gold) */
+    .lanes-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      direction: ltr;
+    }
+
+    .lane-card-btn {
+      border-radius: 12px;
+      border: 2px solid transparent;
+      padding: 4px 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.08s, box-shadow 0.08s, border-color 0.15s;
+      direction: rtl;
+    }
+
+    .lane-card-btn.lane-0 {
+      background: var(--coral-accent);
+      border-color: #F4A298;
+      box-shadow: 0 4px 0 var(--coral-dark);
+    }
+
+    .lane-card-btn.lane-1 {
+      background: var(--teal-primary);
+      border-color: #80E5D9;
+      box-shadow: 0 4px 0 var(--teal-deep);
+    }
+
+    .lane-card-btn.lane-2 {
+      background: #1D4E75;
+      border-color: #7FAED4;
+      box-shadow: 0 4px 0 var(--navy-deep);
+    }
+
+    .lane-card-btn.active-lane {
+      outline: 3px solid var(--gold-highlight);
+      transform: translateY(-2px);
+    }
+
+    .lane-card-btn:active {
+      transform: translateY(2px);
+    }
+
+    .lane-card-title {
+      font-size: 0.66rem;
+      font-weight: 700;
+      color: var(--sand-cream);
+      line-height: 1.1;
+    }
+
+    .lane-card-val {
+      font-size: 1.32rem;
+      font-weight: 900;
+      color: var(--text-white);
+      line-height: 1.15;
+    }
+
+    /* Bottom Nitro Gear Bar */
+    .nitro-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--navy-deep);
+      border: 1px solid var(--navy-border);
+      border-radius: 999px;
+      padding: 3px 10px;
+      direction: rtl;
+    }
+
+    .nitro-label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--gold-highlight);
+      white-space: nowrap;
+    }
+
+    .nitro-track {
+      flex: 1;
+      height: 9px;
+      background: var(--navy-surface);
+      border-radius: 999px;
+      overflow: hidden;
+      display: flex;
+      gap: 2px;
+      padding: 1px;
+    }
+
+    .nitro-seg {
+      flex: 1;
+      height: 100%;
+      background: var(--navy-card);
+      border-radius: 4px;
+      transition: background 0.25s ease;
+    }
+
+    .nitro-seg.filled {
+      background: var(--teal-primary);
+    }
+
+    .nitro-seg.boost-pulse {
+      background: var(--gold-highlight);
+    }
+
+    #nitro-gear-text {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--sand-cream);
+      white-space: nowrap;
+    }
+
+    /* ==========================================================================
+       SAUDI & HEJAZI GARAGE MODAL ("كراج الأبطال") & DIALOGS
+       ========================================================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: rgba(8, 26, 41, 0.88);
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+    }
+
+    .modal-backdrop.hidden {
+      display: none !important;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 630px;
+      max-height: 96dvh;
+      background: var(--navy-surface);
+      border: 2px solid var(--sand-border);
+      border-radius: 18px;
+      box-shadow: 0 18px 42px rgba(5, 16, 26, 0.8);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Hijazi Architectural Header with Subtle Roshan Geometric Lattice Trim */
+    .modal-header {
+      background: var(--navy-deep);
+      color: var(--text-white);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-shrink: 0;
+      border-bottom: 3px solid var(--gold-highlight);
+      position: relative;
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 0;
+    }
+
+    .header-brand-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: rgba(0, 168, 150, 0.18);
+      border: 1.5px solid var(--teal-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .header-titles {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .header-game-title {
+      font-size: 1.05rem;
+      font-weight: 900;
+      color: var(--text-white);
+      line-height: 1.2;
+    }
+
+    .header-sub-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--gold-highlight);
+      line-height: 1.2;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    /* Subtle Hijazi Geometric Divider Strip */
+    .hijazi-pattern-strip {
+      height: 6px;
+      width: 100%;
+      background-color: var(--navy-deep);
+      background-image: repeating-linear-gradient(
+        90deg,
+        var(--teal-primary) 0px,
+        var(--teal-primary) 12px,
+        transparent 12px,
+        transparent 18px,
+        var(--coral-accent) 18px,
+        var(--coral-accent) 24px,
+        transparent 24px,
+        transparent 30px,
+        var(--gold-highlight) 30px,
+        var(--gold-highlight) 36px,
+        transparent 36px,
+        transparent 42px
+      );
+      opacity: 0.85;
+      flex-shrink: 0;
+    }
+
+    .modal-body {
+      padding: 10px 14px 12px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+      /* Subtle coastal Al-Balad silhouette watermark in background */
+      background-image: radial-gradient(circle at 15% 10%, rgba(0, 168, 150, 0.08) 0%, transparent 55%);
+    }
+
+    /* Player Name Row & Leaderboard Button */
+    .garage-top-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: end;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .field-label {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--sand-cream);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .text-input {
+      width: 100%;
+      background: var(--sand-cream);
+      border: 2px solid var(--sand-border);
+      border-radius: 10px;
+      padding: 7px 12px;
+      color: var(--text-dark);
+      font-size: 0.94rem;
+      font-weight: 800;
+      outline: none;
+      text-align: right;
+      direction: rtl;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .text-input::placeholder {
+      color: #5C768D;
+      font-weight: 500;
+    }
+
+    .text-input:focus {
+      border-color: var(--teal-primary);
+      box-shadow: 0 0 0 3px rgba(0, 168, 150, 0.25);
+    }
+
+    /* Selected Car Preview Card (Jeddah Coastal Garage Showcase) */
+    .garage-showcase {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--sand-cream);
+      color: var(--text-dark);
+      border: 2px solid var(--sand-border);
+      border-radius: 14px;
+      padding: 8px 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .showcase-turntable-wrap {
+      position: relative;
+      width: 78px;
+      height: 78px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #turntable-canvas {
+      width: 78px;
+      height: 78px;
+      border-radius: 50%;
+      background: var(--navy-deep);
+      border: 2.5px solid var(--teal-primary);
+      display: block;
+    }
+
+    .showcase-details {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .showcase-top-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    #selected-car-title {
+      font-size: 1.02rem;
+      font-weight: 900;
+      color: var(--navy-deep);
+      line-height: 1.25;
+    }
+
+    .selected-confirm-pill {
+      font-size: 0.68rem;
+      font-weight: 800;
+      background: var(--teal-primary);
+      color: var(--text-white);
+      padding: 2px 8px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      white-space: nowrap;
+    }
+
+    #selected-car-desc {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: #2C4A63;
+      line-height: 1.35;
+    }
+
+    /* 2x5 Selectable Saudi/Hejazi Supercars Grid */
+    .cars-grid-2x5 {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+
+    .car-slot-btn {
+      position: relative;
+      background: var(--navy-deep);
+      border: 2px solid var(--navy-border);
+      border-radius: 11px;
+      padding: 5px 4px 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      transition: transform 0.12s, border-color 0.12s, background-color 0.12s;
+    }
+
+    .car-slot-btn:hover {
+      border-color: var(--teal-primary);
+      background: var(--navy-card);
+    }
+
+    .car-slot-btn.selected {
+      border-color: var(--gold-highlight);
+      background: rgba(0, 168, 150, 0.22);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+      transform: translateY(-2px);
+    }
+
+    /* Non-color Selection Checkmark Badge on Selected Car Card */
+    .car-check-badge {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--gold-highlight);
+      color: var(--navy-deep);
+      font-size: 0.64rem;
+      font-weight: 900;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    }
+
+    .car-slot-btn.selected .car-check-badge {
+      display: flex;
+    }
+
+    .car-thumb-canvas {
+      width: 46px;
+      height: 56px;
+      display: block;
+    }
+
+    .car-slot-name {
+      font-size: 0.66rem;
+      font-weight: 700;
+      color: var(--text-white);
+      text-align: center;
+      line-height: 1.2;
+      margin-top: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 100%;
+    }
+
+    .car-slot-btn.selected .car-slot-name {
+      color: var(--gold-highlight);
+      font-weight: 800;
+    }
+
+    /* Configuration Selection Cards (Difficulty, Number Format, Speed Unit) */
+    .settings-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .settings-pair-row {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 8px;
+    }
+
+    .toggle-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .toggle-pill-btn {
+      position: relative;
+      background: var(--navy-deep);
+      border: 2px solid var(--navy-border);
+      border-radius: 11px;
+      padding: 6px 8px;
+      color: var(--text-cream);
+      font-size: 0.76rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      line-height: 1.3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      transition: all 0.15s ease;
+    }
+
+    .toggle-pill-btn:hover {
+      border-color: var(--teal-primary);
+      background: var(--navy-card);
+    }
+
+    .toggle-pill-btn.active {
+      background: var(--teal-dark);
+      border-color: var(--gold-highlight);
+      color: var(--text-white);
+      box-shadow: 0 3px 0 var(--navy-deep);
+    }
+
+    /* Non-color Selection Indicator Dot/Check inside Active Option */
+    .opt-check-mark {
+      display: none;
+      font-size: 0.68rem;
+      font-weight: 900;
+      color: var(--gold-highlight);
+      margin-right: 3px;
+    }
+
+    .toggle-pill-btn.active .opt-check-mark {
+      display: inline;
+    }
+
+    .opt-main-title {
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: var(--text-white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .opt-sub-desc {
+      font-size: 0.68rem;
+      font-weight: 500;
+      color: var(--sand-warm);
+    }
+
+    .toggle-pill-btn.active .opt-sub-desc {
+      color: var(--sand-cream);
+    }
+
+    /* Large Visual Digit Samples for Number Format Selection */
+    .numeral-sample-big {
+      font-size: 1.05rem;
+      font-weight: 900;
+      color: var(--gold-highlight);
+      background: rgba(11, 37, 58, 0.45);
+      padding: 1px 8px;
+      border-radius: 6px;
+      line-height: 1.2;
+      direction: rtl;
+    }
+
+    .toggle-pill-btn.active .numeral-sample-big {
+      background: rgba(11, 37, 58, 0.65);
+      color: var(--gold-highlight);
+    }
+
+    /* Primary Start Action Button ("يلا، انطلق!") */
+    .btn-cta-start {
+      width: 100%;
+      background: var(--teal-primary);
+      border: 2px solid #80E5D9;
+      border-radius: 14px;
+      padding: 10px 18px;
+      color: var(--text-white);
+      font-size: 1.14rem;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 5px 0 var(--teal-deep);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: transform 0.08s, box-shadow 0.08s, background-color 0.15s;
+    }
+
+    .btn-cta-start:hover {
+      background: #00B8A5;
+    }
+
+    .btn-cta-start:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 var(--teal-deep);
+    }
+
+    /* Secondary Warm Sand / Gold Action Button */
+    .btn-secondary-sand {
+      background: var(--sand-cream);
+      border: 2px solid var(--gold-highlight);
+      border-radius: 10px;
+      padding: 6px 10px;
+      color: var(--navy-deep);
+      font-size: 0.78rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 3px 0 var(--sand-border);
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: transform 0.08s, box-shadow 0.08s, background-color 0.15s;
+    }
+
+    .btn-secondary-sand:hover {
+      background: #FFFDF9;
+    }
+
+    .btn-secondary-sand:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 var(--sand-border);
+    }
+
+    /* Stats & Leaderboard Table */
+    .stats-cards-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+    }
+
+    .stat-box {
+      background: var(--navy-deep);
+      border: 1.5px solid var(--navy-border);
+      border-radius: 12px;
+      padding: 8px 6px;
+      text-align: center;
+    }
+
+    .stat-box .val {
+      font-size: 1.28rem;
+      font-weight: 900;
+      color: var(--gold-highlight);
+    }
+
+    .stat-box .lbl {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--sand-cream);
+    }
+
+    .leaderboard-list {
+      background: var(--navy-deep);
+      border: 1.5px solid var(--navy-border);
+      border-radius: 12px;
+      padding: 6px;
+      max-height: 185px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .lb-row {
+      display: grid;
+      grid-template-columns: 28px 1fr auto auto;
+      gap: 8px;
+      align-items: center;
+      background: var(--navy-surface);
+      padding: 5px 8px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .lb-rank {
+      background: var(--navy-card);
+      color: var(--gold-highlight);
+      text-align: center;
+      border-radius: 6px;
+      padding: 1px 4px;
+      font-weight: 800;
+    }
+
+    /* Responsive adjustments for compact mobile screens */
+    @media (max-width: 480px) {
+      .settings-pair-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-height: 720px) {
+      .modal-body { padding: 8px 10px; gap: 7px; }
+      .car-thumb-canvas { width: 38px; height: 46px; }
+      .showcase-turntable-wrap, #turntable-canvas { width: 62px; height: 62px; }
+      .btn-cta-start { padding: 8px 14px; font-size: 1.02rem; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app-shell">
+    <!-- ==================== TOP HUD ==================== -->
+    <header id="top-hud">
+      <div class="hud-row-1">
+        <!-- Driver License Card -->
+        <div class="driver-card">
+          <canvas id="hud-car-icon" width="68" height="88"></canvas>
+          <div class="driver-meta">
+            <div class="driver-name-line" id="hud-driver-name">البطل السريع</div>
+            <div class="driver-badges">
+              <span class="badge-pill" id="hud-age-badge">المتقدم</span>
+              <span class="badge-pill badge-trophy">🏆 <span id="hud-score-count">٠</span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 Lives Heart Panel -->
+        <div class="hearts-panel" aria-label="المحاولات المتبقية">
+          <div class="hearts-row" id="hud-hearts-row">
+            <span class="heart-icon">❤️</span>
+            <span class="heart-icon">❤️</span>
+            <span class="heart-icon">❤️</span>
+          </div>
+          <div class="hearts-label" id="hud-hearts-label">٣ محاولات</div>
+        </div>
+
+        <!-- Digital Speedometer Box -->
+        <div class="speedo-box" id="hud-speedo-box">
+          <div class="speedo-value-row">
+            <span id="hud-speed-num">٠</span>
+            <span id="hud-speed-unit">كم/ساعة</span>
+          </div>
+          <div id="hud-speed-compare">متوقف عند خط البداية 🅿️</div>
+        </div>
+      </div>
+
+      <!-- Live Educational Speed Concept Ribbon -->
+      <div id="edu-speed-ribbon">
+        <span id="edu-speed-text">جاهز يا بطل؟ حل المسألة للانطلاق من خط البداية!</span>
+        <span id="edu-status-pill">قدّها يا بطل!</span>
+      </div>
+
+      <!-- Second Row: Utility Controls + Question Gantry -->
+      <div class="hud-row-2">
+        <div class="hud-Quick-btns">
+          <button type="button" class="btn-3d-icon" id="btn-pause" title="إيقاف مؤقت">
+            <span class="ico">⏸️</span>
+            <span>إيقاف</span>
+          </button>
+          <button type="button" class="btn-3d-icon" id="btn-sound" title="الصوت">
+            <span class="ico" id="sound-icon">🔊</span>
+            <span>الصوت</span>
+          </button>
+          <button type="button" class="btn-3d-icon" id="btn-hud-scores" title="لوحة الأبطال">
+            <span class="ico">🏆</span>
+            <span>الأبطال</span>
+          </button>
+        </div>
+
+        <div class="question-gantry">
+          <div class="question-header-row">
+            <span class="q-title-badge">المسألة الحالية</span>
+            <div id="hud-question-eq">٢ + ٣ = ؟</div>
+          </div>
+          <!-- Visual Color-Coded Counting Dots (Shown automatically for المبتدئ / Under 6 Yrs) -->
+          <div id="hud-counting-dots"></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ==================== CENTER 2D TOP-DOWN RACE CANVAS ==================== -->
+    <main id="track-stage">
+      <canvas id="race-canvas"></canvas>
+      <div id="race-toast" role="status" aria-live="polite"></div>
+    </main>
+
+    <!-- ==================== BOTTOM COCKPIT TRAY ==================== -->
+    <footer id="bottom-cockpit">
+      <!-- Physical LTR Grid so Left button is on Left side & Right button is on Right side -->
+      <div class="cockpit-controls-row">
+        <button type="button" class="steer-btn" id="btn-steer-left" aria-label="اتجه يساراً">
+          <span class="steer-arrow">⬅️</span>
+          <span class="steer-label">يسار</span>
+        </button>
+
+        <div class="lanes-cards-grid">
+          <button type="button" class="lane-card-btn lane-0" data-lane="0">
+            <span class="lane-card-title" id="lane-title-0">المسار ١</span>
+            <span class="lane-card-val" id="lane-val-0">٥</span>
+          </button>
+          <button type="button" class="lane-card-btn lane-1 active-lane" data-lane="1">
+            <span class="lane-card-title" id="lane-title-1">المسار ٢</span>
+            <span class="lane-card-val" id="lane-val-1">٧</span>
+          </button>
+          <button type="button" class="lane-card-btn lane-2" data-lane="2">
+            <span class="lane-card-title" id="lane-title-2">المسار ٣</span>
+            <span class="lane-card-val" id="lane-val-2">٩</span>
+          </button>
+        </div>
+
+        <button type="button" class="steer-btn" id="btn-steer-right" aria-label="اتجه يميناً">
+          <span class="steer-arrow">➡️</span>
+          <span class="steer-label">يمين</span>
+        </button>
+      </div>
+
+      <!-- Bottom Nitro Gear Bar -->
+      <div class="nitro-bar-row">
+        <span class="nitro-label">⚡ عداد النيترو:</span>
+        <div class="nitro-track" id="nitro-segments">
+          <div class="nitro-seg"></div>
+          <div class="nitro-seg"></div>
+          <div class="nitro-seg"></div>
+          <div class="nitro-seg"></div>
+          <div class="nitro-seg"></div>
+          <div class="nitro-seg"></div>
+          <div class="nitro-seg"></div>
+          <div class="nitro-seg"></div>
+          <div class="nitro-seg"></div>
+          <div class="nitro-seg"></div>
+        </div>
+        <span id="nitro-gear-text">المستوى ١</span>
+      </div>
+    </footer>
+
+    <!-- ==================== SAUDI & HEJAZI GARAGE MODAL (كراج الأبطال) ==================== -->
+    <div class="modal-backdrop" id="modal-garage">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="header-brand">
+            <div class="header-brand-icon" aria-hidden="true">
+              <!-- Custom SVG Racing Wheel & Hijazi Star Emblem -->
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="9" stroke="#E9B44C" stroke-width="2.2"/>
+                <circle cx="12" cy="12" r="3" fill="#00A896"/>
+                <path d="M12 3V9M12 15V21M3 12H9M15 12H21" stroke="#FDFBF7" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="header-titles">
+              <h1 class="header-game-title">بطل الحساب السريع</h1>
+              <span class="header-sub-title">كراج الأبطال • ساحل جدة والبحر الأحمر</span>
+            </div>
+          </div>
+          <div class="header-actions">
+            <button type="button" class="btn-secondary-sand" id="btn-open-pwa-files" title="تثبيت اللعبة للعمل دون اتصال">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 3V15M12 15L7 10M12 15L17 10M4 19H20" stroke="#0B253A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>تثبيت اللعبة</span>
+            </button>
+          </div>
+        </div>
+        <div class="hijazi-pattern-strip" aria-hidden="true"></div>
+
+        <div class="modal-body">
+          <!-- 1. Player Name Input ("اسم البطل") & Leaderboard Button -->
+          <div class="garage-top-row">
+            <div class="field-group">
+              <label class="field-label" for="input-driver-name">اسم البطل</label>
+              <input
+                type="text"
+                id="input-driver-name"
+                class="text-input"
+                value="البطل السريع"
+                maxlength="22"
+                placeholder="اكتب اسمك يا بطل"
+              />
+            </div>
+            <button type="button" class="btn-secondary-sand" id="btn-garage-leaderboard" style="height: 40px;">
+              <span>🏆</span>
+              <span>لوحة الأبطال</span>
+            </button>
+          </div>
+
+          <!-- 2. Selected Car Showcase Preview -->
+          <div class="garage-showcase">
+            <div class="showcase-turntable-wrap">
+              <canvas id="turntable-canvas" width="156" height="156"></canvas>
+            </div>
+            <div class="showcase-details">
+              <div class="showcase-top-line">
+                <div id="selected-car-title">الصقر الحجازي #١١</div>
+                <span class="selected-confirm-pill">تم الاختيار ✓</span>
+              </div>
+              <div id="selected-car-desc">مستوحاة من حجر المنقبي والرواشين الحجازية في جدة التاريخية</div>
+            </div>
+          </div>
+
+          <!-- 3. 10 Selectable Saudi & Hejazi Vector Race Cars -->
+          <div class="field-group">
+            <span class="field-label">اختر سيارتك</span>
+            <div class="cars-grid-2x5" id="garage-cars-grid"></div>
+          </div>
+
+          <!-- 4. Difficulty, Number Format & Speed Unit Selection -->
+          <div class="settings-grid">
+            <!-- Difficulty & Age Division -->
+            <div class="field-group">
+              <span class="field-label">اختر مستوى التحدي</span>
+              <div class="toggle-group">
+                <button type="button" class="toggle-pill-btn" data-age="under6" id="btn-age-under6">
+                  <span class="opt-main-title">
+                    <span class="opt-check-mark">✓</span>
+                    <span>🌱 المبتدئ</span>
+                  </span>
+                  <span class="opt-sub-desc">أقل من ٦ سنوات • أسئلة سهلة</span>
+                </button>
+                <button type="button" class="toggle-pill-btn active" data-age="6to10" id="btn-age-6to10">
+                  <span class="opt-main-title">
+                    <span class="opt-check-mark">✓</span>
+                    <span>🚀 المتقدم</span>
+                  </span>
+                  <span class="opt-sub-desc">من ٦ إلى ١٠ سنوات • تحديات أصعب</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Number Format & Speed Unit Row -->
+            <div class="settings-pair-row">
+              <div class="field-group">
+                <span class="field-label">اختر شكل الأرقام</span>
+                <div class="toggle-group">
+                  <button type="button" class="toggle-pill-btn active" data-numeral="eastern" id="btn-num-eastern">
+                    <span class="numeral-sample-big">١ ٢ ٣</span>
+                    <span class="opt-sub-desc"><span class="opt-check-mark">✓</span>الأرقام العربية الشرقية</span>
+                  </button>
+                  <button type="button" class="toggle-pill-btn" data-numeral="western" id="btn-num-western">
+                    <span class="numeral-sample-big" dir="ltr">1 2 3</span>
+                    <span class="opt-sub-desc"><span class="opt-check-mark">✓</span>الأرقام الغربية</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="field-group">
+                <span class="field-label">وحدة السرعة</span>
+                <div class="toggle-group">
+                  <button type="button" class="toggle-pill-btn active" data-unit="kmh" id="btn-unit-kmh">
+                    <span class="opt-main-title"><span class="opt-check-mark">✓</span>كم/ساعة</span>
+                    <span class="opt-sub-desc">كيلومتر</span>
+                  </button>
+                  <button type="button" class="toggle-pill-btn" data-unit="mph" id="btn-unit-mph">
+                    <span class="opt-main-title"><span class="opt-check-mark">✓</span>ميل/ساعة</span>
+                    <span class="opt-sub-desc">ميل</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Prominent Primary Start Button ("يلا، انطلق!") with Custom SVG Checkered Flag Icon -->
+          <button type="button" class="btn-cta-start" id="btn-start-race">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 3V21" stroke="#FDFBF7" stroke-width="2.4" stroke-linecap="round"/>
+              <path d="M5 4H19L16.5 8.5L19 13H5V4Z" fill="#E9B44C" stroke="#FDFBF7" stroke-width="1.8" stroke-linejoin="round"/>
+              <rect x="7" y="5.5" width="3" height="3" fill="#0B253A"/>
+              <rect x="13" y="5.5" width="3" height="3" fill="#0B253A"/>
+              <rect x="10" y="8.5" width="3" height="3" fill="#0B253A"/>
+            </svg>
+            <span>يلا، انطلق!</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== PAUSE MODAL ==================== -->
+    <div class="modal-backdrop hidden" id="modal-pause">
+      <div class="modal-card" style="max-width: 420px;">
+        <div class="modal-header">
+          <div class="header-titles">
+            <h2 class="header-game-title">⏸️ استراحة قصيرة</h2>
+          </div>
+        </div>
+        <div class="hijazi-pattern-strip" aria-hidden="true"></div>
+        <div class="modal-body">
+          <p style="text-align: center; font-weight: 700; color: var(--sand-cream);">
+            خذ نفساً يا بطل! مستعد تكمل التحدي؟ قدّها يا بطل!
+          </p>
+          <button type="button" class="btn-cta-start" id="btn-resume-race">▶️ كمل السباق</button>
+          <button type="button" class="btn-secondary-sand" style="width: 100%; padding: 10px;" id="btn-pause-to-garage">🔧 العودة إلى كراج الأبطال</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== RACE OVER & LEADERBOARD MODAL ==================== -->
+    <div class="modal-backdrop hidden" id="modal-gameover">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="header-titles">
+            <h2 class="header-game-title" id="gameover-modal-title">🏁 انتهى السباق!</h2>
+          </div>
+          <button type="button" class="btn-secondary-sand" id="btn-close-gameover">✖ إغلاق</button>
+        </div>
+        <div class="hijazi-pattern-strip" aria-hidden="true"></div>
+        <div class="modal-body">
+          <div class="stats-cards-row" id="gameover-stats-row">
+            <div class="stat-box">
+              <div class="val" id="stat-sums">٠</div>
+              <div class="lbl">المسائل المحلولة</div>
+            </div>
+            <div class="stat-box">
+              <div class="val" id="stat-topspeed">٠</div>
+              <div class="lbl">السرعة القصوى</div>
+            </div>
+            <div class="stat-box">
+              <div class="val" id="stat-distance">٠ م</div>
+              <div class="lbl">المسافة المقطوعة</div>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span class="field-label">🏆 لوحة الأبطال:</span>
+              <button type="button" class="toggle-pill-btn" id="btn-clear-scores" style="padding:3px 9px; font-size:0.7rem;">مسح السجل</button>
+            </div>
+            <div class="leaderboard-list" id="leaderboard-container"></div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <button type="button" class="btn-cta-start" id="btn-race-again">🔄 يلا، سباق جديد</button>
+            <button type="button" class="btn-secondary-sand" id="btn-gameover-garage" style="font-size: 0.92rem;">🏎️ كراج الأبطال</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== PWA INSTALLATION & OFFLINE FILES MODAL ==================== -->
+    <div class="modal-backdrop hidden" id="modal-pwa-info">
+      <div class="modal-card" style="max-width: 520px;">
+        <div class="modal-header">
+          <div class="header-titles">
+            <h2 class="header-game-title">📲 تثبيت اللعبة والعمل دون اتصال</h2>
+          </div>
+          <button type="button" class="btn-secondary-sand" id="btn-close-pwa-info">✖ إغلاق</button>
+        </div>
+        <div class="hijazi-pattern-strip" aria-hidden="true"></div>
+        <div class="modal-body">
+          <p style="font-size: 0.84rem; font-weight: 500; color: var(--sand-cream); line-height: 1.5;">
+            تعمل لعبة <strong>بطل الحساب السريع</strong> بالكامل دون اتصال بالإنترنت (100% Offline). يمكنك تثبيتها على جهازك مباشرة أو تنزيل ملفات تطبيق الويب التقدمي:
+          </p>
+          <button type="button" class="btn-cta-start" id="btn-trigger-native-install" style="display: none; margin-bottom: 4px;">
+            📲 تثبيت اللعبة على الجهاز الآن
+          </button>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <button type="button" class="btn-secondary-sand" id="btn-dl-manifest">⬇️ تنزيل manifest.json</button>
+            <button type="button" class="btn-secondary-sand" id="btn-dl-sw">⬇️ تنزيل sw.js</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       1. 10 SELECTABLE SAUDI & HEJAZI VECTOR RACE CARS CATALOG
+       Each vehicle has a distinct silhouette/chassis shape, wing configuration,
+       and regional Hijazi / Red Sea / Saudi colourway & pattern.
+       ========================================================================== */
+    const SUPERCARS = [
+      {
+        id: 'hijazi_falcon_11',
+        number: 11,
+        name: 'الصقر الحجازي #11',
+        desc: 'مستوحاة من حجر المنقبي والرواشين الحجازية في جدة التاريخية',
+        body: '#E05A47',
+        secondary: '#F7F1E5',
+        accent: '#E9B44C',
+        spoiler: '#8C2D1F',
+        shape: 'roshan_gt',
+        livery: 'roshan_lattice'
+      },
+      {
+        id: 'red_sea_wave_22',
+        number: 22,
+        name: 'موج البحر الأحمر #22',
+        desc: 'انسيابية سريعة بألوان أمواج البحر الأحمر والمرجان الساحلي',
+        body: '#00A896',
+        secondary: '#0B253A',
+        accent: '#F7F1E5',
+        spoiler: '#05668D',
+        shape: 'wave_aero',
+        livery: 'wave_stream'
+      },
+      {
+        id: 'corniche_breeze_33',
+        number: 33,
+        name: 'نسيم الكورنيش #33',
+        desc: 'سيارة ساحلية رشيقة بألوان كورنيش جدة الفيروزية والمرجانية',
+        body: '#028090',
+        secondary: '#F7F1E5',
+        accent: '#E05A47',
+        spoiler: '#0B253A',
+        shape: 'coastal_coupe',
+        livery: 'coastal_split'
+      },
+      {
+        id: 'albalad_star_44',
+        number: 44,
+        name: 'نجم البلد #44',
+        desc: 'تصميم تراثي عصري بزخارف هندسية حجازية وألوان الرمال الذهبية',
+        body: '#E9B44C',
+        secondary: '#10324D',
+        accent: '#F7F1E5',
+        spoiler: '#10324D',
+        shape: 'heritage_diamond',
+        livery: 'hijazi_diamonds'
+      },
+      {
+        id: 'desert_arrow_55',
+        number: 55,
+        name: 'سهم الصحراء #55',
+        desc: 'متسابقة الكثبان الرملية بهيكل عريض وفتحات تهوية مزدوجة',
+        body: '#D97736',
+        secondary: '#F7F1E5',
+        accent: '#0B253A',
+        spoiler: '#7C3A16',
+        shape: 'dune_sprinter',
+        livery: 'twin_stripe'
+      },
+      {
+        id: 'palm_oasis_66',
+        number: 66,
+        name: 'واحة النخيل #66',
+        desc: 'مستوحاة من واحات النخيل الخضراء مع خطوط ذهبية وكريمية دافئة',
+        body: '#1F7A5C',
+        secondary: '#F7F1E5',
+        accent: '#E9B44C',
+        spoiler: '#0F4C38',
+        shape: 'palm_endurance',
+        livery: 'palm_chevron'
+      },
+      {
+        id: 'jeddah_pearl_77',
+        number: 77,
+        name: 'لؤلؤة جدة #77',
+        desc: 'أجنحة دلتا لؤلؤية ناصعة مع لمسات الفيروز والمرجان',
+        body: '#F7F1E5',
+        secondary: '#00A896',
+        accent: '#E05A47',
+        spoiler: '#05668D',
+        shape: 'pearl_delta',
+        livery: 'pearl_center'
+      },
+      {
+        id: 'coast_meteor_88',
+        number: 88,
+        name: 'شهاب الساحل #88',
+        desc: 'مقاتلة الحلبة الكحلية بزعانف مزدوجة وألوان الشعب المرجانية',
+        body: '#153E5C',
+        secondary: '#E05A47',
+        accent: '#E9B44C',
+        spoiler: '#E05A47',
+        shape: 'reef_twinfin',
+        livery: 'apex_wing'
+      },
+      {
+        id: 'island_pride_95',
+        number: 95,
+        name: 'فخر الجزيرة #95',
+        desc: 'سيارة البطولات الذهبية والفيروزية بتصميم هندسي متقن',
+        body: '#05668D',
+        secondary: '#E9B44C',
+        accent: '#F7F1E5',
+        spoiler: '#0B253A',
+        shape: 'championship_apex',
+        livery: 'diagonal_touring'
+      },
+      {
+        id: 'hijaz_lightning_99',
+        number: 99,
+        name: 'برق الحجاز #99',
+        desc: 'سوبركار ليلية بلون أعماق البحر الأحمر وفتحات محرك ذهبية',
+        body: '#0B253A',
+        secondary: '#00A896',
+        accent: '#E9B44C',
+        spoiler: '#00A896',
+        shape: 'stealth_louver',
+        livery: 'louver_gt'
+      }
+    ];
+
+    /* ==========================================================================
+       2. REAL-WORLD SPEED COMPARISONS & EDUCATIONAL CONCEPT OF SPEED
+       ========================================================================== */
+    const SPEED_COMPARISONS = [
+      { min: 0,   max: 0,   text: 'متوقف عند خط البداية 🅿️' },
+      { min: 1,   max: 15,  text: 'سرعة طفل يركض 🏃' },
+      { min: 16,  max: 25,  text: 'سرعة دراجة هوائية 🚲' },
+      { min: 26,  max: 35,  text: 'حصان يركض 🐎' },
+      { min: 36,  max: 45,  text: 'حافلة مدرسية 🚌' },
+      { min: 46,  max: 65,  text: 'سيارة كارتينج سريعة 🏎️' },
+      { min: 66,  max: 85,  text: 'فهد صياد سريع 🐆' },
+      { min: 86,  max: 99,  text: 'قطار الحرمين السريع 🚄' },
+      { min: 100, max: 999, text: 'سيارة سباق خارقة 🚀' }
+    ];
+
+    /* ==========================================================================
+       3. NUMERAL FORMATTER (Eastern Arabic ١٢٣ vs Western 123)
+       ========================================================================== */
+    const EASTERN_DIGITS = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+
+    function formatNum(value, numeralMode = state.numeralMode) {
+      const str = String(value);
+      if (numeralMode === 'western') return str;
+      return str.replace(/\d/g, d => EASTERN_DIGITS[Number(d)]);
+    }
+
+    /* ==========================================================================
+       4. GLOBAL GAME STATE
+       ========================================================================== */
+    const state = {
+      driverName: 'البطل السريع',
+      carIndex: 0,
+      ageDivision: '6to10',     // 'under6' (المبتدئ) | '6to10' (المتقدم)
+      numeralMode: 'eastern',   // 'eastern' (١٢٣) | 'western' (123)
+      speedUnit: 'kmh',         // 'kmh' | 'mph'
+      soundEnabled: true,
+
+      // Active Race State
+      mode: 'GARAGE',           // 'GARAGE' | 'RACING' | 'PAUSED' | 'GAMEOVER'
+      lanesCount: 3,
+      currentLane: 1,           // 0 = Physical Left (المسار ١), 1 = Center (المسار ٢), 2 = Physical Right (المسار ٣)
+      visualLaneX: 1,           // Smoothly interpolated lane position (0..2)
+
+      baseSpeed: 0,             // Starts at 0 at Starting Grid Line; +10 per correct answer
+      topSpeed: 0,
+      sumsSolved: 0,
+      lives: 3,
+      distanceMeters: 0,
+      roadScrollPx: 0,
+      startLineOffsetPx: 0,     // Scrolls down once car starts moving > 0
+
+      // Timers for 5s Nitro Boost (+5) & 3s Pit Slowdown
+      nitroTimer: 0,
+      slowdownTimer: 0,
+
+      // Single Active Math Question & Normalized Gate (progress 0.0 -> 1.0)
+      question: {
+        a: 2,
+        b: 3,
+        ans: 5,
+        options: [4, 5, 7],
+        correctLane: 1
+      },
+      gateProgress: 0.0,        // 0.0 at top HUD spawn -> 1.0 at car front bumper
+
+      // Celebratory Confetti & Turntable
+      confetti: [],
+      turntableAngle: 0
+    };
+
+    function getEffectiveSpeed() {
+      if (state.baseSpeed === 0 && state.nitroTimer <= 0) return 0;
+      let spd = state.baseSpeed;
+      if (state.nitroTimer > 0) spd += 5;
+      if (state.slowdownTimer > 0) spd = Math.max(5, Math.round(spd * 0.6));
+      return spd;
+    }
+
+    function getSpeedComparison(speedVal) {
+      for (const item of SPEED_COMPARISONS) {
+        if (speedVal >= item.min && speedVal <= item.max) return item.text;
+      }
+      return SPEED_COMPARISONS[SPEED_COMPARISONS.length - 1].text;
+    }
+
+    /* ==========================================================================
+       5. SMOOTH PROCEDURAL WEB AUDIO ENGINE (Zero External MP3s)
+       Low-pass filtered triangle/sine dual-oscillator engine purr + fanfare
+       ========================================================================== */
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.engineOsc1 = null;
+        this.engineOsc2 = null;
+        this.engineFilter = null;
+        this.engineGain = null;
+        this.isRunning = false;
+      }
+
+      init() {
+        if (this.ctx) {
+          if (this.ctx.state === 'suspended') this.ctx.resume();
+          return;
+        }
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        this.ctx = new AudioCtx();
+
+        this.engineOsc1 = this.ctx.createOscillator();
+        this.engineOsc2 = this.ctx.createOscillator();
+        this.engineFilter = this.ctx.createBiquadFilter();
+        this.engineGain = this.ctx.createGain();
+
+        this.engineOsc1.type = 'triangle';
+        this.engineOsc2.type = 'sine';
+        this.engineOsc1.frequency.value = 55;
+        this.engineOsc2.frequency.value = 110;
+
+        this.engineFilter.type = 'lowpass';
+        this.engineFilter.frequency.value = 180;
+        this.engineFilter.Q.value = 2.0;
+
+        this.engineGain.gain.value = 0.0001;
+
+        this.engineOsc1.connect(this.engineFilter);
+        this.engineOsc2.connect(this.engineFilter);
+        this.engineFilter.connect(this.engineGain);
+        this.engineGain.connect(this.ctx.destination);
+
+        this.engineOsc1.start();
+        this.engineOsc2.start();
+        this.isRunning = true;
+      }
+
+      updateEnginePurr(speed, activeRacing) {
+        if (!this.isRunning || !this.ctx) return;
+        const now = this.ctx.currentTime;
+        if (!state.soundEnabled || !activeRacing) {
+          this.engineGain.gain.setTargetAtTime(0.0001, now, 0.08);
+          return;
+        }
+        const baseFreq = 48 + Math.min(speed, 130) * 0.65;
+        const filterFreq = 160 + Math.min(speed, 130) * 2.2;
+        const targetGain = speed === 0 ? 0.022 : 0.06;
+
+        this.engineOsc1.frequency.setTargetAtTime(baseFreq, now, 0.08);
+        this.engineOsc2.frequency.setTargetAtTime(baseFreq * 1.5, now, 0.08);
+        this.engineFilter.frequency.setTargetAtTime(filterFreq, now, 0.08);
+        this.engineGain.gain.setTargetAtTime(targetGain, now, 0.08);
+      }
+
+      playGarageRev() {
+        if (!state.soundEnabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const filt = this.ctx.createBiquadFilter();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(65, now);
+        osc.frequency.exponentialRampToValueAtTime(140, now + 0.15);
+        osc.frequency.exponentialRampToValueAtTime(72, now + 0.34);
+
+        filt.type = 'lowpass';
+        filt.frequency.value = 280;
+
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.linearRampToValueAtTime(0.1, now + 0.08);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+        osc.connect(filt);
+        filt.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.37);
+      }
+
+      playLaneSwitch() {
+        if (!state.soundEnabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(330, now);
+        osc.frequency.exponentialRampToValueAtTime(490, now + 0.07);
+        gain.gain.setValueAtTime(0.055, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.085);
+      }
+
+      playCorrectFanfare() {
+        if (!state.soundEnabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const notes = [523.25, 659.25, 783.99, 1046.5];
+        notes.forEach((freq, idx) => {
+          const now = this.ctx.currentTime + idx * 0.075;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, now);
+          gain.gain.setValueAtTime(0.11, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.25);
+        });
+      }
+
+      playWrongTone() {
+        if (!state.soundEnabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const notes = [260, 195];
+        notes.forEach((freq, idx) => {
+          const now = this.ctx.currentTime + idx * 0.14;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now);
+          gain.gain.setValueAtTime(0.1, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.24);
+        });
+      }
+    }
+
+    const audio = new SoundEngine();
+
+    /* ==========================================================================
+       6. DISTINCT SAUDI & HEJAZI TOP-DOWN VECTOR RACE CAR RENDERER
+       Draws 10 recognizable silhouettes, custom side pods, wings, and Hijazi
+       geometric / coastal decals.
+       ========================================================================== */
+    function drawChassisSilhouettePath(ctx, hw, hh, w, h, shape) {
+      ctx.beginPath();
+      if (shape === 'wave_aero') {
+        // Tapered nose with sculpted wave side-pods
+        ctx.moveTo(0, -hh);
+        ctx.quadraticCurveTo(hw * 0.85, -hh, hw * 0.82, -hh * 0.35);
+        ctx.lineTo(hw, -hh * 0.05);
+        ctx.lineTo(hw * 0.92, hh * 0.85);
+        ctx.quadraticCurveTo(hw * 0.7, hh, 0, hh);
+        ctx.quadraticCurveTo(-hw * 0.7, hh, -hw * 0.92, hh * 0.85);
+        ctx.lineTo(-hw, -hh * 0.05);
+        ctx.lineTo(-hw * 0.82, -hh * 0.35);
+        ctx.quadraticCurveTo(-hw * 0.85, -hh, 0, -hh);
+      } else if (shape === 'pearl_delta') {
+        // Sleek narrow nose expanding into a wide delta rear
+        ctx.moveTo(0, -hh);
+        ctx.lineTo(hw * 0.62, -hh * 0.45);
+        ctx.lineTo(hw, hh * 0.55);
+        ctx.quadraticCurveTo(hw, hh, hw * 0.5, hh);
+        ctx.lineTo(-hw * 0.5, hh);
+        ctx.quadraticCurveTo(-hw, hh, -hw, hh * 0.55);
+        ctx.lineTo(-hw * 0.62, -hh * 0.45);
+      } else if (shape === 'dune_sprinter') {
+        // Wide-body muscular desert sprinter with flared fenders
+        roundRectPath(ctx, -hw * 1.03, -hh, w * 1.03, h, w * 0.22);
+        return;
+      } else if (shape === 'coastal_coupe') {
+        // Rounded classic coastal speedster silhouette
+        roundRectPath(ctx, -hw * 0.94, -hh, w * 0.94, h, w * 0.44);
+        return;
+      } else if (shape === 'reef_twinfin') {
+        // Angular interceptor chassis
+        ctx.moveTo(-hw * 0.55, -hh);
+        ctx.lineTo(hw * 0.55, -hh);
+        ctx.lineTo(hw, -hh * 0.35);
+        ctx.lineTo(hw * 0.95, hh);
+        ctx.lineTo(-hw * 0.95, hh);
+        ctx.lineTo(-hw, -hh * 0.35);
+      } else {
+        // Sculpted GT Supercar default with distinct proportions
+        roundRectPath(ctx, -hw, -hh, w, h, w * 0.29);
+        return;
+      }
+      ctx.closePath();
+    }
+
+    function drawTopDownSupercar(ctx, x, y, width, height, carSpec, opts = {}) {
+      ctx.save();
+      ctx.translate(x, y);
+      if (opts.angle) ctx.rotate(opts.angle);
+
+      const w = width;
+      const h = height;
+      const hw = w / 2;
+      const hh = h / 2;
+
+      // 1. Offset Drop Shadow
+      ctx.fillStyle = 'rgba(5, 16, 26, 0.42)';
+      ctx.save();
+      ctx.translate(3.5, 4.5);
+      drawChassisSilhouettePath(ctx, hw, hh, w, h, carSpec.shape);
+      ctx.fill();
+      ctx.restore();
+
+      // 2. Nitro Twin Exhaust Flame Plumes (Turquoise & Gold)
+      if (opts.boosting) {
+        const flicker = 0.85 + Math.random() * 0.35;
+        ctx.fillStyle = '#00A896';
+        ctx.beginPath();
+        ctx.moveTo(-w * 0.26, hh - 2);
+        ctx.lineTo(-w * 0.16, hh + h * 0.26 * flicker);
+        ctx.lineTo(-w * 0.06, hh - 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#E9B44C';
+        ctx.beginPath();
+        ctx.moveTo(w * 0.06, hh - 2);
+        ctx.lineTo(w * 0.16, hh + h * 0.26 * flicker);
+        ctx.lineTo(w * 0.26, hh - 2);
+        ctx.fill();
+      }
+
+      // 3. 4 Racing Tires
+      ctx.fillStyle = '#0B253A';
+      ctx.strokeStyle = '#4A6B82';
+      ctx.lineWidth = 1.4;
+      const tireW = w * 0.16;
+      const tireH = h * 0.20;
+      const tirePositions = [
+        [-hw - tireW * 0.32, -hh + h * 0.14],
+        [hw - tireW * 0.68,  -hh + h * 0.14],
+        [-hw - tireW * 0.32, hh - h * 0.34],
+        [hw - tireW * 0.68,  hh - h * 0.34]
+      ];
+      tirePositions.forEach(([tx, ty]) => {
+        roundRectPath(ctx, tx, ty, tireW, tireH, 3);
+        ctx.fill();
+        ctx.stroke();
+      });
+
+      // 4. Sculpted Aerodynamic Chassis Body
+      ctx.save();
+      drawChassisSilhouettePath(ctx, hw, hh, w, h, carSpec.shape);
+      ctx.fillStyle = carSpec.body;
+      ctx.fill();
+      ctx.clip();
+
+      // 5. Regional Saudi & Hejazi Livery Patterns Inside Clipped Body
+      ctx.fillStyle = carSpec.secondary;
+      if (carSpec.livery === 'roshan_lattice') {
+        // Subtle Al-Balad Roshan geometric center band
+        const bandW = w * 0.28;
+        ctx.fillRect(-bandW / 2, -hh, bandW, h);
+        ctx.strokeStyle = carSpec.accent;
+        ctx.lineWidth = 1.3;
+        for (let py = -hh + 4; py < hh; py += 10) {
+          ctx.beginPath();
+          ctx.moveTo(0, py);
+          ctx.lineTo(bandW * 0.42, py + 5);
+          ctx.lineTo(0, py + 10);
+          ctx.lineTo(-bandW * 0.42, py + 5);
+          ctx.closePath();
+          ctx.stroke();
+        }
+      } else if (carSpec.livery === 'wave_stream') {
+        // Red Sea curved wave side-stripes
+        ctx.beginPath();
+        ctx.moveTo(-hw, -hh * 0.5);
+        ctx.quadraticCurveTo(0, -hh * 0.1, hw, -hh * 0.5);
+        ctx.lineTo(hw, hh * 0.15);
+        ctx.quadraticCurveTo(0, -hh * 0.2, -hw, hh * 0.15);
+        ctx.closePath();
+        ctx.fill();
+      } else if (carSpec.livery === 'coastal_split') {
+        // Two-tone coastal nose & tail
+        ctx.fillRect(-hw, -hh, w, h * 0.32);
+        ctx.fillStyle = carSpec.accent;
+        ctx.fillRect(-w * 0.08, -hh, w * 0.16, h);
+      } else if (carSpec.livery === 'hijazi_diamonds') {
+        // Geometric diamond chain along hood & tail
+        ctx.fillRect(-w * 0.14, -hh, w * 0.28, h);
+        ctx.fillStyle = carSpec.accent;
+        for (let dy = -hh + 6; dy < hh - 6; dy += 12) {
+          ctx.beginPath();
+          ctx.moveTo(0, dy);
+          ctx.lineTo(w * 0.1, dy + 5);
+          ctx.lineTo(0, dy + 10);
+          ctx.lineTo(-w * 0.1, dy + 5);
+          ctx.closePath();
+          ctx.fill();
+        }
+      } else if (carSpec.livery === 'palm_chevron') {
+        // Palm frond V-chevrons
+        ctx.fillRect(-w * 0.07, -hh, w * 0.14, h);
+        ctx.strokeStyle = carSpec.accent;
+        ctx.lineWidth = 2.2;
+        for (let cy = -hh + 10; cy < hh - 10; cy += 14) {
+          ctx.beginPath();
+          ctx.moveTo(-w * 0.32, cy - 5);
+          ctx.lineTo(0, cy + 4);
+          ctx.lineTo(w * 0.32, cy - 5);
+          ctx.stroke();
+        }
+      } else if (carSpec.livery === 'pearl_center') {
+        ctx.beginPath();
+        ctx.moveTo(0, -hh);
+        ctx.lineTo(hw * 0.45, hh);
+        ctx.lineTo(-hw * 0.45, hh);
+        ctx.closePath();
+        ctx.fill();
+      } else if (carSpec.livery === 'twin_stripe') {
+        const sw = w * 0.11;
+        ctx.fillRect(-sw * 1.35, -hh, sw, h);
+        ctx.fillRect(sw * 0.35, -hh, sw, h);
+      } else if (carSpec.livery === 'apex_wing') {
+        ctx.beginPath();
+        ctx.moveTo(0, -hh);
+        ctx.lineTo(hw, -hh + h * 0.45);
+        ctx.lineTo(hw, hh);
+        ctx.lineTo(-hw, hh);
+        ctx.lineTo(-hw, -hh + h * 0.45);
+        ctx.closePath();
+        ctx.fill();
+      } else if (carSpec.livery === 'diagonal_touring') {
+        ctx.beginPath();
+        ctx.moveTo(-hw, -hh + h * 0.18);
+        ctx.lineTo(hw, -hh + h * 0.55);
+        ctx.lineTo(hw, hh);
+        ctx.lineTo(-hw, hh * 0.4);
+        ctx.closePath();
+        ctx.fill();
+      } else if (carSpec.livery === 'louver_gt') {
+        ctx.fillRect(-w * 0.07, -hh, w * 0.14, h);
+      }
+
+      // Side Accent Skirts
+      ctx.fillStyle = carSpec.accent;
+      ctx.fillRect(-hw, -hh * 0.28, w * 0.07, h * 0.34);
+      ctx.fillRect(hw - w * 0.07, -hh * 0.28, w * 0.07, h * 0.34);
+      ctx.restore();
+
+      // Bold Dark Navy Contour around Chassis
+      ctx.lineWidth = Math.max(2, w * 0.052);
+      ctx.strokeStyle = '#071726';
+      drawChassisSilhouettePath(ctx, hw, hh, w, h, carSpec.shape);
+      ctx.stroke();
+
+      // 6. Aerodynamic Windshield & Canopy
+      ctx.fillStyle = '#0B253A';
+      ctx.strokeStyle = '#7FAED4';
+      ctx.lineWidth = 1.3;
+      roundRectPath(ctx, -w * 0.32, -h * 0.20, w * 0.64, h * 0.40, w * 0.16);
+      ctx.fill();
+      ctx.stroke();
+
+      // Front glass reflection highlight
+      ctx.fillStyle = 'rgba(128, 229, 217, 0.38)';
+      ctx.beginPath();
+      ctx.moveTo(-w * 0.25, -h * 0.17);
+      ctx.lineTo(w * 0.25, -h * 0.17);
+      ctx.lineTo(w * 0.18, -h * 0.03);
+      ctx.lineTo(-w * 0.18, -h * 0.03);
+      ctx.closePath();
+      ctx.fill();
+
+      // 7. Rear Engine Louvers
+      ctx.strokeStyle = '#071726';
+      ctx.lineWidth = 1.4;
+      for (let i = 0; i < 3; i++) {
+        const ly = h * 0.24 + i * (h * 0.045);
+        ctx.beginPath();
+        ctx.moveTo(-w * 0.20, ly);
+        ctx.lineTo(w * 0.20, ly);
+        ctx.stroke();
+      }
+
+      // 8. Rear Spoiler Wing (Twin-fin or Full Wing)
+      ctx.fillStyle = carSpec.spoiler;
+      ctx.strokeStyle = '#071726';
+      ctx.lineWidth = 1.6;
+      if (carSpec.shape === 'reef_twinfin') {
+        roundRectPath(ctx, -hw * 0.98, hh - h * 0.16, w * 0.22, h * 0.15, 2);
+        ctx.fill();
+        ctx.stroke();
+        roundRectPath(ctx, hw * 0.98 - w * 0.22, hh - h * 0.16, w * 0.22, h * 0.15, 2);
+        ctx.fill();
+        ctx.stroke();
+      } else {
+        roundRectPath(ctx, -hw * 1.02, hh - h * 0.11, w * 1.02, h * 0.095, 3);
+        ctx.fill();
+        ctx.stroke();
+      }
+
+      // 9. Front Headlights
+      ctx.fillStyle = '#FDFBF7';
+      ctx.fillRect(-w * 0.32, -hh + 1.5, w * 0.14, h * 0.04);
+      ctx.fillRect(w * 0.18, -hh + 1.5, w * 0.14, h * 0.04);
+
+      // 10. Roof Number Badge Circle
+      const badgeRadius = w * 0.23;
+      ctx.fillStyle = '#F7F1E5';
+      ctx.strokeStyle = '#0B253A';
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.arc(0, h * 0.05, badgeRadius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#0B253A';
+      ctx.font = `900 ${Math.round(w * 0.24)}px Tajawal, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(formatNum(carSpec.number), 0, h * 0.055);
+
+      ctx.restore();
+    }
+
+    function roundRectPath(ctx, x, y, w, h, r) {
+      const radius = Math.min(r, w / 2, h / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.arcTo(x + w, y, x + w, y + h, radius);
+      ctx.arcTo(x + w, y + h, x, y + h, radius);
+      ctx.arcTo(x, y + h, x, y, radius);
+      ctx.arcTo(x, y, x + w, y, radius);
+      ctx.closePath();
+    }
+
+    /* ==========================================================================
+       7. MATH QUESTION GENERATOR & VISUAL COUNTING DOTS (المبتدئ & المتقدم)
+       ========================================================================== */
+    function generateNextQuestion() {
+      let a = 1;
+      let b = 1;
+
+      if (state.ageDivision === 'under6') {
+        // المبتدئ (أقل من ٦ سنوات): Strictly sums below 10 (max sum = 9)
+        const maxSum = 9;
+        const targetSum = 2 + Math.floor(Math.random() * (maxSum - 1));
+        a = 1 + Math.floor(Math.random() * (targetSum - 1));
+        b = targetSum - a;
+      } else {
+        // المتقدم (من ٦ إلى ١٠ سنوات): progressive addition scaling with sumsSolved
+        const tier = Math.floor(state.sumsSolved / 4);
+        const maxAddend = Math.min(25, 6 + tier * 3);
+        const minAddend = Math.min(10, 1 + tier);
+        a = minAddend + Math.floor(Math.random() * (maxAddend - minAddend + 1));
+        b = minAddend + Math.floor(Math.random() * (maxAddend - minAddend + 1));
+      }
+
+      const ans = a + b;
+      const wrongSet = new Set();
+      const deltas = [-3, -2, -1, 1, 2, 3, 4, -4];
+      while (wrongSet.size < 2) {
+        const d = deltas[Math.floor(Math.random() * deltas.length)];
+        const candidate = ans + d;
+        if (candidate >= 1 && candidate !== ans) {
+          if (state.ageDivision === 'under6' && candidate > 10) continue;
+          wrongSet.add(candidate);
+        }
+      }
+
+      const wrongArr = Array.from(wrongSet);
+      const correctLane = Math.floor(Math.random() * 3);
+      const options = [0, 0, 0];
+      let wIdx = 0;
+      for (let lane = 0; lane < 3; lane++) {
+        if (lane === correctLane) {
+          options[lane] = ans;
+        } else {
+          options[lane] = wrongArr[wIdx++];
+        }
+      }
+
+      state.question = { a, b, ans, options, correctLane };
+      // Normalized progress resets immediately on the exact same frame
+      state.gateProgress = 0.0;
+      syncQuestionAndGateUI();
+    }
+
+    function syncQuestionAndGateUI() {
+      const { a, b, options } = state.question;
+      const eqEl = document.getElementById('hud-question-eq');
+      eqEl.textContent = `${formatNum(a)} + ${formatNum(b)} = ؟`;
+
+      // Visual Color-Coded Counting Dots for المبتدئ (Under 6 Division)
+      const dotsContainer = document.getElementById('hud-counting-dots');
+      dotsContainer.innerHTML = '';
+      if (state.ageDivision === 'under6') {
+        const groupA = document.createElement('div');
+        groupA.className = 'dot-group';
+        for (let i = 0; i < a; i++) {
+          const d = document.createElement('span');
+          d.className = 'count-dot dot-a';
+          groupA.appendChild(d);
+        }
+
+        const plusSpan = document.createElement('span');
+        plusSpan.className = 'dot-plus';
+        plusSpan.textContent = '+';
+
+        const groupB = document.createElement('div');
+        groupB.className = 'dot-group';
+        for (let i = 0; i < b; i++) {
+          const d = document.createElement('span');
+          d.className = 'count-dot dot-b';
+          groupB.appendChild(d);
+        }
+
+        dotsContainer.appendChild(groupA);
+        dotsContainer.appendChild(plusSpan);
+        dotsContainer.appendChild(groupB);
+        dotsContainer.style.display = 'flex';
+      } else {
+        dotsContainer.style.display = 'none';
+      }
+
+      // Update Bottom Cockpit 3 Lane Cards
+      for (let i = 0; i < 3; i++) {
+        document.getElementById(`lane-title-${i}`).textContent = `المسار ${formatNum(i + 1)}`;
+        document.getElementById(`lane-val-${i}`).textContent = formatNum(options[i]);
+      }
+    }
+
+    /* ==========================================================================
+       8. HUD & EDUCATIONAL SPEED CONCEPT UPDATER
+       ========================================================================== */
+    function updateHUD() {
+      const car = SUPERCARS[state.carIndex];
+      document.getElementById('hud-driver-name').textContent = state.driverName;
+      document.getElementById('hud-age-badge').textContent =
+        state.ageDivision === 'under6' ? 'المبتدئ' : 'المتقدم';
+      document.getElementById('hud-score-count').textContent = formatNum(state.sumsSolved);
+
+      // Draw mini car in Driver License Card
+      const iconCanvas = document.getElementById('hud-car-icon');
+      const ictx = iconCanvas.getContext('2d');
+      ictx.clearRect(0, 0, iconCanvas.width, iconCanvas.height);
+      drawTopDownSupercar(ictx, iconCanvas.width / 2, iconCanvas.height / 2, 42, 66, car);
+
+      // 3 Lives Hearts
+      const heartIcons = document.querySelectorAll('#hud-hearts-row .heart-icon');
+      heartIcons.forEach((el, idx) => {
+        if (idx < state.lives) el.classList.remove('lost');
+        else el.classList.add('lost');
+      });
+      document.getElementById('hud-hearts-label').textContent = `${formatNum(state.lives)} محاولات`;
+
+      // Speedometer & Real-World Comparison
+      const effSpeed = getEffectiveSpeed();
+      const unitStr = state.speedUnit === 'kmh' ? 'كم/ساعة' : 'ميل/ساعة';
+      const unitWord = state.speedUnit === 'kmh' ? 'كيلومتراً' : 'ميلاً';
+
+      document.getElementById('hud-speed-num').textContent = formatNum(effSpeed);
+      document.getElementById('hud-speed-unit').textContent = unitStr;
+      document.getElementById('hud-speed-compare').textContent = getSpeedComparison(effSpeed);
+
+      const speedoBox = document.getElementById('hud-speedo-box');
+      speedoBox.classList.toggle('nitro-active', state.nitroTimer > 0);
+      speedoBox.classList.toggle('slow-active', state.slowdownTimer > 0);
+
+      // Educational Speed Concept Ribbon
+      const eduTextEl = document.getElementById('edu-speed-text');
+      const eduPillEl = document.getElementById('edu-status-pill');
+
+      if (effSpeed === 0) {
+        eduTextEl.textContent = `سرعة ${formatNum(0)} ${unitStr}: متوقف عند خط البداية! اختر المسار الصحيح للانطلاق.`;
+      } else {
+        eduTextEl.textContent = `سرعة ${formatNum(effSpeed)} ${unitStr} تعني قطع ${formatNum(effSpeed)} ${unitWord} في ساعة واحدة!`;
+      }
+
+      if (state.nitroTimer > 0) {
+        eduPillEl.textContent = `قدّها يا بطل! +${formatNum(5)} ${unitStr}`;
+        eduPillEl.style.borderColor = '#E9B44C';
+        eduPillEl.style.color = '#E9B44C';
+      } else if (state.slowdownTimer > 0) {
+        eduPillEl.textContent = 'جرّب مرة ثانية';
+        eduPillEl.style.borderColor = '#E05A47';
+        eduPillEl.style.color = '#F4A298';
+      } else {
+        eduPillEl.textContent = getSpeedComparison(effSpeed);
+        eduPillEl.style.borderColor = '#00A896';
+        eduPillEl.style.color = '#00A896';
+      }
+
+      // Active Lane Card Highlight
+      document.querySelectorAll('.lane-card-btn').forEach((btn, idx) => {
+        btn.classList.toggle('active-lane', idx === state.currentLane);
+      });
+
+      // Bottom Nitro Gear Bar
+      const segs = document.querySelectorAll('#nitro-segments .nitro-seg');
+      const filledCount = Math.min(10, Math.floor(state.baseSpeed / 10));
+      segs.forEach((seg, idx) => {
+        seg.classList.toggle('filled', idx < filledCount);
+        seg.classList.toggle('boost-pulse', state.nitroTimer > 0 && idx < filledCount);
+      });
+      const gearLvl = Math.max(1, filledCount + 1);
+      document.getElementById('nitro-gear-text').textContent = `المستوى ${formatNum(gearLvl)}`;
+    }
+
+    /* ==========================================================================
+       9. GATE COLLISION & ANSWER EVALUATION (Saudi/Hejazi Positive Feedback)
+       ========================================================================== */
+    let toastTimeout = null;
+    function showRaceToast(message, isGood) {
+      const toast = document.getElementById('race-toast');
+      toast.textContent = message;
+      toast.className = `show ${isGood ? 'toast-good' : 'toast-bad'}`;
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2400);
+    }
+
+    function spawnConfettiBurst(x, y) {
+      const colors = ['#E9B44C', '#00A896', '#E05A47', '#F7F1E5', '#48CAE4'];
+      for (let i = 0; i < 34; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 90 + Math.random() * 230;
+        state.confetti.push({
+          x,
+          y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - 80,
+          size: 5 + Math.random() * 6,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rot: Math.random() * Math.PI,
+          vrot: (Math.random() - 0.5) * 8,
+          life: 1.0
+        });
+      }
+    }
+
+    function evaluateGateHit() {
+      const { a, b, ans, correctLane } = state.question;
+
+      if (state.currentLane === correctLane) {
+        // Correct Answer: +10 base speed, 5s Nitro Boost (+5), confetti, fanfare
+        state.sumsSolved += 1;
+        state.baseSpeed += 10;
+        state.nitroTimer = 5.0;
+        state.slowdownTimer = 0;
+
+        const eff = getEffectiveSpeed();
+        if (eff > state.topSpeed) state.topSpeed = eff;
+
+        audio.playCorrectFanfare();
+
+        const isMilestone = state.sumsSolved % 5 === 0;
+        const phrase = isMilestone
+          ? `أحسنت! إنجاز جديد 🌟 ${formatNum(a)} + ${formatNum(b)} = ${formatNum(ans)}`
+          : `كفو! إجابة صحيحة 🎉 ${formatNum(a)} + ${formatNum(b)} = ${formatNum(ans)} • قدّها يا بطل!`;
+
+        showRaceToast(phrase, true);
+
+        const canvas = document.getElementById('race-canvas');
+        spawnConfettiBurst(canvas.width / 2, canvas.height * 0.65);
+
+        // Immediately spawn next question and gate on the exact same frame (zero delay)
+        generateNextQuestion();
+        updateHUD();
+      } else {
+        // Wrong Answer: Deduct 1 Life, 3s slowdown, show solved equation
+        state.lives = Math.max(0, state.lives - 1);
+        state.slowdownTimer = 3.0;
+        state.nitroTimer = 0;
+
+        audio.playWrongTone();
+        showRaceToast(
+          `جرّب مرة ثانية 💡 الإجابة الصحيحة: ${formatNum(a)} + ${formatNum(b)} = ${formatNum(ans)}`,
+          false
+        );
+
+        updateHUD();
+
+        if (state.lives <= 0) {
+          triggerGameOver();
+          return;
+        }
+
+        // Immediately spawn next question and gate on the exact same frame
+        generateNextQuestion();
+        updateHUD();
+      }
+    }
+
+    /* ==========================================================================
+       10. NORMALIZED TIME-TO-ARRIVE GATE MOVEMENT & JEDDAH CORNICHE TRACK RENDER
+       ========================================================================== */
+    const raceCanvas = document.getElementById('race-canvas');
+    const rctx = raceCanvas.getContext('2d');
+
+    function resizeCanvases() {
+      const stage = document.getElementById('track-stage');
+      const rect = stage.getBoundingClientRect();
+      raceCanvas.width = Math.max(300, Math.floor(rect.width));
+      raceCanvas.height = Math.max(240, Math.floor(rect.height));
+    }
+
+    window.addEventListener('resize', resizeCanvases);
+
+    function getNormalizedGateDurationSeconds() {
+      // Equal thinking time on small phones and large iPads/tablets:
+      // 6.5s base for المبتدئ (under 6), 5.5s base for المتقدم (6-10)
+      const baseTime = state.ageDivision === 'under6' ? 6.5 : 5.5;
+      const speedFactor = Math.min(1.6, state.baseSpeed * 0.012);
+      let duration = Math.max(3.4, baseTime - speedFactor);
+      if (state.slowdownTimer > 0) duration *= 1.25;
+      return duration;
+    }
+
+    let lastFrameTime = performance.now();
+
+    function gameLoop(now) {
+      const dt = Math.min(0.05, Math.max(0.001, (now - lastFrameTime) / 1000));
+      lastFrameTime = now;
+
+      if (state.mode === 'GARAGE') {
+        state.turntableAngle += dt * 1.1;
+        renderGarageTurntable();
+      }
+
+      if (state.mode === 'RACING') {
+        updateRacePhysics(dt);
+      }
+
+      renderRaceTrack(dt);
+      requestAnimationFrame(gameLoop);
+    }
+
+    function updateRacePhysics(dt) {
+      let timerChanged = false;
+      if (state.nitroTimer > 0) {
+        state.nitroTimer = Math.max(0, state.nitroTimer - dt);
+        if (state.nitroTimer === 0) timerChanged = true;
+      }
+      if (state.slowdownTimer > 0) {
+        state.slowdownTimer = Math.max(0, state.slowdownTimer - dt);
+        if (state.slowdownTimer === 0) timerChanged = true;
+      }
+      if (timerChanged) updateHUD();
+
+      const effSpeed = getEffectiveSpeed();
+      if (effSpeed > state.topSpeed) state.topSpeed = effSpeed;
+
+      audio.updateEnginePurr(effSpeed, true);
+
+      // Smooth Horizontal Car Steering Interpolation
+      const steerLerp = Math.min(1, dt * 12);
+      state.visualLaneX += (state.currentLane - state.visualLaneX) * steerLerp;
+
+      // Road & Starting Grid Line Scrolling
+      const visualScrollSpeedPx = effSpeed * 4.6;
+      state.roadScrollPx = (state.roadScrollPx + visualScrollSpeedPx * dt) % 120;
+      if (effSpeed > 0 && state.startLineOffsetPx < raceCanvas.height) {
+        state.startLineOffsetPx += visualScrollSpeedPx * dt;
+      }
+
+      const metersPerSec = (effSpeed * 1000) / 3600;
+      state.distanceMeters += metersPerSec * dt;
+
+      // Normalized Time-To-Arrive Gate Movement (progress: 0.0 -> 1.0)
+      const gateDuration = getNormalizedGateDurationSeconds();
+      state.gateProgress += dt / gateDuration;
+
+      if (state.gateProgress >= 1.0) {
+        evaluateGateHit();
+      }
+
+      // Update Confetti Particles
+      for (let i = state.confetti.length - 1; i >= 0; i--) {
+        const p = state.confetti[i];
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.vy += 320 * dt;
+        p.rot += p.vrot * dt;
+        p.life -= dt * 0.9;
+        if (p.life <= 0) state.confetti.splice(i, 1);
+      }
+    }
+
+    function renderRaceTrack() {
+      const W = raceCanvas.width;
+      const H = raceCanvas.height;
+      rctx.clearRect(0, 0, W, H);
+
+      const roadMargin = Math.max(28, W * 0.10);
+      const roadX = roadMargin;
+      const roadW = W - roadMargin * 2;
+      const laneW = roadW / 3;
+
+      // 1. Jeddah Corniche & Historic Al-Balad Coastal Shoulders
+      // Left side: Red Sea Turquoise water & sandy promenade
+      rctx.fillStyle = '#05668D';
+      rctx.fillRect(0, 0, roadX, H);
+      // Right side: Warm Hijazi sandy promenade
+      rctx.fillStyle = '#D5C2A5';
+      rctx.fillRect(roadX + roadW, 0, roadMargin, H);
+
+      const stripeH = 60;
+      const offsetScenery = state.roadScrollPx % (stripeH * 2);
+
+      // Coastal wave ripples on left & stylized palm/Al-Balad stone blocks on right
+      for (let y = -stripeH * 2 + offsetScenery; y < H; y += stripeH) {
+        // Left Red Sea turquoise wave crest
+        rctx.fillStyle = '#00A896';
+        rctx.fillRect(4, y + 10, roadX * 0.55, 18);
+
+        // Right Corniche Palm & Coral-stone planter motif
+        rctx.fillStyle = '#EADBC8';
+        rctx.fillRect(roadX + roadW + 4, y + 6, roadMargin - 8, 28);
+        // Mini palm crown circle
+        rctx.fillStyle = '#1F7A5C';
+        rctx.beginPath();
+        rctx.arc(roadX + roadW + roadMargin * 0.5, y + 20, Math.min(9, roadMargin * 0.25), 0, Math.PI * 2);
+        rctx.fill();
+      }
+
+      // 2. Deep Sea Navy Asphalt Road Surface
+      rctx.fillStyle = '#102A3F';
+      rctx.fillRect(roadX, 0, roadW, H);
+
+      // 3. Coral Red & Sandy Cream Hijazi Curbs (Rumble Strips)
+      const curbW = Math.max(8, roadMargin * 0.26);
+      const curbSegH = 30;
+      const curbOffset = state.roadScrollPx % (curbSegH * 2);
+      for (let y = -curbSegH * 2 + curbOffset; y < H; y += curbSegH) {
+        const isCoral = Math.floor((y - curbOffset) / curbSegH) % 2 === 0;
+        rctx.fillStyle = isCoral ? '#E05A47' : '#F7F1E5';
+        rctx.fillRect(roadX - curbW, y, curbW, curbSegH);
+        rctx.fillRect(roadX + roadW, y, curbW, curbSegH);
+      }
+
+      // 4. 3-Lane Dashed Divider Lines (Warm Cream)
+      rctx.strokeStyle = 'rgba(247, 241, 229, 0.48)';
+      rctx.lineWidth = 3;
+      rctx.setLineDash([28, 32]);
+      rctx.lineDashOffset = -state.roadScrollPx;
+      for (let i = 1; i <= 2; i++) {
+        const lx = roadX + laneW * i;
+        rctx.beginPath();
+        rctx.moveTo(lx, 0);
+        rctx.lineTo(lx, H);
+        rctx.stroke();
+      }
+      rctx.setLineDash([]);
+
+      // 5. Subtle Watermark Lane Labels on Road
+      const carBumperY = H * 0.72;
+      const carCenterY = H * 0.81;
+
+      rctx.font = '700 13px Tajawal, sans-serif';
+      rctx.fillStyle = 'rgba(247, 241, 229, 0.42)';
+      rctx.textAlign = 'center';
+      for (let lane = 0; lane < 3; lane++) {
+        const cx = roadX + laneW * (lane + 0.5);
+        rctx.fillText(`المسار ${formatNum(lane + 1)}`, cx, H - 12);
+      }
+
+      // 6. Checkered Starting Grid Line (خط البداية)
+      const startLineY = carBumperY + state.startLineOffsetPx;
+      if (startLineY < H + 50) {
+        const checkRows = 2;
+        const checkCols = 12;
+        const cellW = roadW / checkCols;
+        const cellH = 12;
+        for (let r = 0; r < checkRows; r++) {
+          for (let c = 0; c < checkCols; c++) {
+            rctx.fillStyle = (r + c) % 2 === 0 ? '#F7F1E5' : '#0B253A';
+            rctx.fillRect(roadX + c * cellW, startLineY + r * cellH, cellW, cellH);
+          }
+        }
+        rctx.fillStyle = 'rgba(11, 37, 58, 0.9)';
+        roundRectPath(rctx, W / 2 - 58, startLineY - 22, 116, 20, 6);
+        rctx.fill();
+        rctx.fillStyle = '#E9B44C';
+        rctx.font = '800 12px Tajawal, sans-serif';
+        rctx.textAlign = 'center';
+        rctx.textBaseline = 'middle';
+        rctx.fillText('🏁 خط البداية', W / 2, startLineY - 12);
+      }
+
+      // 7. Approaching 3-Lane Answer Gate (Normalized progress 0.0 -> 1.0)
+      const spawnY = 26;
+      const gateY = spawnY + state.gateProgress * (carBumperY - spawnY);
+      const gateH = 52;
+
+      const laneColors = [
+        { bg: '#E05A47', border: '#F4A298' },
+        { bg: '#00A896', border: '#80E5D9' },
+        { bg: '#1D4E75', border: '#7FAED4' }
+      ];
+
+      // Overhead gantry bar across road
+      rctx.fillStyle = '#25557A';
+      rctx.fillRect(roadX - 4, gateY - 4, roadW + 8, 6);
+
+      for (let lane = 0; lane < 3; lane++) {
+        const gx = roadX + lane * laneW + 6;
+        const gw = laneW - 12;
+        const gy = gateY - gateH / 2;
+        const col = laneColors[lane];
+
+        // Gate box shadow
+        rctx.fillStyle = 'rgba(5, 16, 26, 0.45)';
+        roundRectPath(rctx, gx, gy + 4, gw, gateH, 10);
+        rctx.fill();
+
+        // Gate box body
+        rctx.fillStyle = col.bg;
+        rctx.strokeStyle = state.currentLane === lane ? '#E9B44C' : col.border;
+        rctx.lineWidth = state.currentLane === lane ? 3.5 : 2;
+        roundRectPath(rctx, gx, gy, gw, gateH, 10);
+        rctx.fill();
+        rctx.stroke();
+
+        // Lane label inside gate
+        rctx.fillStyle = '#F7F1E5';
+        rctx.font = '700 11px Tajawal, sans-serif';
+        rctx.textAlign = 'center';
+        rctx.textBaseline = 'top';
+        rctx.fillText(`المسار ${formatNum(lane + 1)}`, gx + gw / 2, gy + 4);
+
+        // Numeric Answer Option inside gate
+        rctx.fillStyle = '#FDFBF7';
+        rctx.font = '900 24px Tajawal, sans-serif';
+        rctx.textBaseline = 'bottom';
+        rctx.fillText(formatNum(state.question.options[lane]), gx + gw / 2, gy + gateH - 3);
+      }
+
+      // 8. Draw Player's Selected Saudi/Hejazi Supercar
+      const carW = Math.min(62, laneW * 0.56);
+      const carH = carW * 1.58;
+      const carX = roadX + (state.visualLaneX + 0.5) * laneW;
+      const tiltAngle = (state.currentLane - state.visualLaneX) * 0.18;
+
+      drawTopDownSupercar(
+        rctx,
+        carX,
+        carCenterY,
+        carW,
+        carH,
+        SUPERCARS[state.carIndex],
+        { angle: tiltAngle, boosting: state.nitroTimer > 0 }
+      );
+
+      // 9. Render Celebratory Confetti Particles
+      state.confetti.forEach(p => {
+        rctx.save();
+        rctx.translate(p.x, p.y);
+        rctx.rotate(p.rot);
+        rctx.globalAlpha = Math.max(0, p.life);
+        rctx.fillStyle = p.color;
+        rctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.65);
+        rctx.restore();
+      });
+    }
+
+    /* ==========================================================================
+       11. GARAGE SETUP ("كراج الأبطال") & 2x5 LIVE CAR THUMBNAILS
+       ========================================================================== */
+    function initGarageUI() {
+      const grid = document.getElementById('garage-cars-grid');
+      grid.innerHTML = '';
+
+      SUPERCARS.forEach((car, idx) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `car-slot-btn ${idx === state.carIndex ? 'selected' : ''}`;
+        btn.dataset.index = idx;
+        btn.setAttribute('aria-pressed', idx === state.carIndex ? 'true' : 'false');
+
+        const checkBadge = document.createElement('span');
+        checkBadge.className = 'car-check-badge';
+        checkBadge.textContent = '✓';
+        checkBadge.setAttribute('aria-hidden', 'true');
+
+        const cnv = document.createElement('canvas');
+        cnv.width = 76;
+        cnv.height = 94;
+        cnv.className = 'car-thumb-canvas';
+
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'car-slot-name';
+        nameSpan.textContent = formatNum(car.name);
+
+        btn.appendChild(checkBadge);
+        btn.appendChild(cnv);
+        btn.appendChild(nameSpan);
+        grid.appendChild(btn);
+
+        const ctx = cnv.getContext('2d');
+        drawTopDownSupercar(ctx, cnv.width / 2, cnv.height / 2, 42, 66, car);
+
+        btn.addEventListener('click', () => {
+          state.carIndex = idx;
+          document.querySelectorAll('.car-slot-btn').forEach((b, i) => {
+            const isSel = i === idx;
+            b.classList.toggle('selected', isSel);
+            b.setAttribute('aria-pressed', isSel ? 'true' : 'false');
+          });
+          updateSelectedCarShowcase();
+          audio.playGarageRev();
+        });
+      });
+
+      updateSelectedCarShowcase();
+    }
+
+    function updateSelectedCarShowcase() {
+      const car = SUPERCARS[state.carIndex];
+      document.getElementById('selected-car-title').textContent = formatNum(car.name);
+      document.getElementById('selected-car-desc').textContent = car.desc;
+
+      // Refresh roof badge numerals on all 10 garage thumbnails when numeral mode changes
+      document.querySelectorAll('.car-slot-btn').forEach((btn, idx) => {
+        const cnv = btn.querySelector('canvas');
+        const ctx = cnv.getContext('2d');
+        ctx.clearRect(0, 0, cnv.width, cnv.height);
+        drawTopDownSupercar(ctx, cnv.width / 2, cnv.height / 2, 42, 66, SUPERCARS[idx]);
+        btn.querySelector('.car-slot-name').textContent = formatNum(SUPERCARS[idx].name);
+      });
+    }
+
+    function renderGarageTurntable() {
+      const cnv = document.getElementById('turntable-canvas');
+      if (!cnv) return;
+      const ctx = cnv.getContext('2d');
+      const W = cnv.width;
+      const H = cnv.height;
+      ctx.clearRect(0, 0, W, H);
+
+      // Subtle Hijazi Octagonal / Circular Turntable Platform Ring
+      ctx.save();
+      ctx.translate(W / 2, H / 2);
+      ctx.strokeStyle = 'rgba(233, 180, 76, 0.45)';
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([10, 8]);
+      ctx.rotate(-state.turntableAngle * 0.45);
+      ctx.beginPath();
+      ctx.arc(0, 0, W * 0.42, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+
+      drawTopDownSupercar(
+        ctx,
+        W / 2,
+        H / 2,
+        54,
+        84,
+        SUPERCARS[state.carIndex],
+        { angle: Math.sin(state.turntableAngle) * 0.42, boosting: true }
+      );
+    }
+
+    /* ==========================================================================
+       12. INDEXEDDB LOCAL LEADERBOARD STORAGE (لوحة الأبطال)
+       ========================================================================== */
+    const DB_NAME = 'SpeedyMathRacerGrandPrixDB';
+    const DB_VERSION = 1;
+    const STORE_NAME = 'leaderboard';
+
+    function openScoresDB() {
+      return new Promise(resolve => {
+        if (!window.indexedDB) {
+          resolve(null);
+          return;
+        }
+        const req = indexedDB.open(DB_NAME, DB_VERSION);
+        req.onupgradeneeded = e => {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+          }
+        };
+        req.onsuccess = e => resolve(e.target.result);
+        req.onerror = () => resolve(null);
+      });
+    }
+
+    async function saveScoreRecord(record) {
+      const db = await openScoresDB();
+      if (!db) return;
+      return new Promise(resolve => {
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        tx.objectStore(STORE_NAME).add(record);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => resolve();
+      });
+    }
+
+    async function fetchTopScores() {
+      const db = await openScoresDB();
+      if (!db) return [];
+      return new Promise(resolve => {
+        const tx = db.transaction(STORE_NAME, 'readonly');
+        const req = tx.objectStore(STORE_NAME).getAll();
+        req.onsuccess = () => {
+          const list = req.result || [];
+          list.sort((a, b) => (b.sums - a.sums) || (b.topSpeed - a.topSpeed));
+          resolve(list.slice(0, 15));
+        };
+        req.onerror = () => resolve([]);
+      });
+    }
+
+    async function clearAllScores() {
+      const db = await openScoresDB();
+      if (!db) return;
+      return new Promise(resolve => {
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        tx.objectStore(STORE_NAME).clear();
+        tx.oncomplete = () => resolve();
+      });
+    }
+
+    async function renderLeaderboardList() {
+      const container = document.getElementById('leaderboard-container');
+      const scores = await fetchTopScores();
+      container.innerHTML = '';
+
+      if (scores.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:12px; color:var(--text-muted); font-weight:700;">لا توجد نتائج مسجلة بعد. يلا يا بطل، كن أول المتصدرين! 🏁</div>`;
+        return;
+      }
+
+      scores.forEach((s, idx) => {
+        const row = document.createElement('div');
+        row.className = 'lb-row';
+        const unitLabel = s.unit === 'mph' ? 'ميل/ساعة' : 'كم/ساعة';
+        row.innerHTML = `
+          <span class="lb-rank">${formatNum(idx + 1)}</span>
+          <span style="color:var(--text-white); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${s.driverName} <small style="color:var(--gold-highlight);">(${formatNum(s.carName || '')})</small></span>
+          <span style="color:var(--teal-primary);">✅ ${formatNum(s.sums)}</span>
+          <span style="color:var(--sand-cream);">🚀 ${formatNum(s.topSpeed)} ${unitLabel}</span>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    /* ==========================================================================
+       13. RACE LIFECYCLE & CONTROLS (STEERING, TOUCH, KEYBOARD)
+       ========================================================================== */
+    function startNewRace() {
+      const nameInput = document.getElementById('input-driver-name').value.trim();
+      state.driverName = nameInput || 'البطل السريع';
+
+      // Reset Race State (Starts parked at 0 speed on Starting Grid Line)
+      state.baseSpeed = 0;
+      state.topSpeed = 0;
+      state.sumsSolved = 0;
+      state.lives = 3;
+      state.distanceMeters = 0;
+      state.roadScrollPx = 0;
+      state.startLineOffsetPx = 0;
+      state.nitroTimer = 0;
+      state.slowdownTimer = 0;
+      state.currentLane = 1;
+      state.visualLaneX = 1;
+      state.confetti = [];
+
+      document.getElementById('modal-garage').classList.add('hidden');
+      document.getElementById('modal-gameover').classList.add('hidden');
+      document.getElementById('modal-pause').classList.add('hidden');
+
+      resizeCanvases();
+      generateNextQuestion();
+      updateHUD();
+
+      state.mode = 'RACING';
+      audio.init();
+      audio.playGarageRev();
+      showRaceToast('جاهز يا بطل؟ يلا، انطلق! 🏁', true);
+    }
+
+    async function triggerGameOver() {
+      state.mode = 'GAMEOVER';
+      audio.updateEnginePurr(0, false);
+
+      const unitStr = state.speedUnit === 'kmh' ? 'كم/ساعة' : 'ميل/ساعة';
+      document.getElementById('gameover-modal-title').textContent = '🏁 انتهى السباق! قدّها يا بطل';
+      document.getElementById('gameover-stats-row').style.display = 'grid';
+      document.getElementById('stat-sums').textContent = formatNum(state.sumsSolved);
+      document.getElementById('stat-topspeed').textContent = `${formatNum(state.topSpeed)} ${unitStr}`;
+      document.getElementById('stat-distance').textContent = `${formatNum(Math.round(state.distanceMeters))} م`;
+
+      await saveScoreRecord({
+        driverName: state.driverName,
+        carName: SUPERCARS[state.carIndex].name,
+        sums: state.sumsSolved,
+        topSpeed: state.topSpeed,
+        distance: Math.round(state.distanceMeters),
+        unit: state.speedUnit,
+        timestamp: Date.now()
+      });
+
+      await renderLeaderboardList();
+      document.getElementById('modal-gameover').classList.remove('hidden');
+    }
+
+    async function openLeaderboardOnlyModal() {
+      if (state.mode === 'RACING') {
+        state.mode = 'PAUSED';
+        audio.updateEnginePurr(0, false);
+      }
+      document.getElementById('gameover-modal-title').textContent = '🏆 لوحة الأبطال';
+      document.getElementById('gameover-stats-row').style.display = 'none';
+      await renderLeaderboardList();
+      document.getElementById('modal-gameover').classList.remove('hidden');
+    }
+
+    function steerCarLeft() {
+      if (state.mode !== 'RACING') return;
+      if (state.currentLane > 0) {
+        state.currentLane -= 1;
+        audio.playLaneSwitch();
+        updateHUD();
+      }
+    }
+
+    function steerCarRight() {
+      if (state.mode !== 'RACING') return;
+      if (state.currentLane < 2) {
+        state.currentLane += 1;
+        audio.playLaneSwitch();
+        updateHUD();
+      }
+    }
+
+    function selectLaneDirectly(laneIndex) {
+      if (state.mode !== 'RACING') return;
+      if (laneIndex >= 0 && laneIndex <= 2 && laneIndex !== state.currentLane) {
+        state.currentLane = laneIndex;
+        audio.playLaneSwitch();
+        updateHUD();
+      }
+    }
+
+    /* ==========================================================================
+       14. EVENT LISTENERS & UI BINDINGS
+       ========================================================================== */
+    let deferredInstallPrompt = null;
+
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      const installBtn = document.getElementById('btn-trigger-native-install');
+      if (installBtn) installBtn.style.display = 'flex';
+    });
+
+    function bindEvents() {
+      // Steering Physical Left / Right Buttons
+      document.getElementById('btn-steer-left').addEventListener('click', steerCarLeft);
+      document.getElementById('btn-steer-right').addEventListener('click', steerCarRight);
+
+      // Direct Tap on 3 Tactile Lane Answer Cards
+      document.querySelectorAll('.lane-card-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const lane = Number(btn.dataset.lane);
+          selectLaneDirectly(lane);
+        });
+      });
+
+      // Direct Tap or Swipe on Race Canvas
+      let touchStartX = null;
+      raceCanvas.addEventListener('pointerdown', e => {
+        if (state.mode !== 'RACING') return;
+        touchStartX = e.clientX;
+        const rect = raceCanvas.getBoundingClientRect();
+        const relX = e.clientX - rect.left;
+        const tappedLane = Math.floor((relX / rect.width) * 3);
+        selectLaneDirectly(Math.max(0, Math.min(2, tappedLane)));
+      });
+
+      raceCanvas.addEventListener('pointerup', e => {
+        if (touchStartX === null || state.mode !== 'RACING') return;
+        const dx = e.clientX - touchStartX;
+        if (Math.abs(dx) > 40) {
+          if (dx < 0) steerCarLeft();
+          else steerCarRight();
+        }
+        touchStartX = null;
+      });
+
+      // Keyboard Arrow Keys & 1/2/3 Support
+      window.addEventListener('keydown', e => {
+        if (state.mode !== 'RACING') return;
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          steerCarLeft();
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          steerCarRight();
+        } else if (e.key === '1') {
+          selectLaneDirectly(0);
+        } else if (e.key === '2') {
+          selectLaneDirectly(1);
+        } else if (e.key === '3') {
+          selectLaneDirectly(2);
+        }
+      });
+
+      // Garage Settings Toggles
+      document.getElementById('btn-age-under6').addEventListener('click', () => {
+        state.ageDivision = 'under6';
+        document.getElementById('btn-age-under6').classList.add('active');
+        document.getElementById('btn-age-6to10').classList.remove('active');
+        syncQuestionAndGateUI();
+        updateHUD();
+      });
+
+      document.getElementById('btn-age-6to10').addEventListener('click', () => {
+        state.ageDivision = '6to10';
+        document.getElementById('btn-age-6to10').classList.add('active');
+        document.getElementById('btn-age-under6').classList.remove('active');
+        syncQuestionAndGateUI();
+        updateHUD();
+      });
+
+      document.getElementById('btn-num-eastern').addEventListener('click', () => {
+        state.numeralMode = 'eastern';
+        document.getElementById('btn-num-eastern').classList.add('active');
+        document.getElementById('btn-num-western').classList.remove('active');
+        updateSelectedCarShowcase();
+        syncQuestionAndGateUI();
+        updateHUD();
+      });
+
+      document.getElementById('btn-num-western').addEventListener('click', () => {
+        state.numeralMode = 'western';
+        document.getElementById('btn-num-western').classList.add('active');
+        document.getElementById('btn-num-eastern').classList.remove('active');
+        updateSelectedCarShowcase();
+        syncQuestionAndGateUI();
+        updateHUD();
+      });
+
+      document.getElementById('btn-unit-kmh').addEventListener('click', () => {
+        state.speedUnit = 'kmh';
+        document.getElementById('btn-unit-kmh').classList.add('active');
+        document.getElementById('btn-unit-mph').classList.remove('active');
+        updateHUD();
+      });
+
+      document.getElementById('btn-unit-mph').addEventListener('click', () => {
+        state.speedUnit = 'mph';
+        document.getElementById('btn-unit-mph').classList.add('active');
+        document.getElementById('btn-unit-kmh').classList.remove('active');
+        updateHUD();
+      });
+
+      // Start Race Button ("يلا، انطلق!")
+      document.getElementById('btn-start-race').addEventListener('click', startNewRace);
+
+      // Top HUD Buttons (Pause, Sound, Leaderboard)
+      document.getElementById('btn-pause').addEventListener('click', () => {
+        if (state.mode === 'RACING') {
+          state.mode = 'PAUSED';
+          audio.updateEnginePurr(0, false);
+          document.getElementById('modal-pause').classList.remove('hidden');
+        }
+      });
+
+      document.getElementById('btn-resume-race').addEventListener('click', () => {
+        document.getElementById('modal-pause').classList.add('hidden');
+        state.mode = 'RACING';
+      });
+
+      document.getElementById('btn-pause-to-garage').addEventListener('click', () => {
+        document.getElementById('modal-pause').classList.add('hidden');
+        state.mode = 'GARAGE';
+        audio.updateEnginePurr(0, false);
+        document.getElementById('modal-garage').classList.remove('hidden');
+      });
+
+      document.getElementById('btn-sound').addEventListener('click', () => {
+        state.soundEnabled = !state.soundEnabled;
+        document.getElementById('sound-icon').textContent = state.soundEnabled ? '🔊' : '🔇';
+        if (!state.soundEnabled) audio.updateEnginePurr(0, false);
+      });
+
+      document.getElementById('btn-hud-scores').addEventListener('click', openLeaderboardOnlyModal);
+      document.getElementById('btn-garage-leaderboard').addEventListener('click', openLeaderboardOnlyModal);
+
+      document.getElementById('btn-close-gameover').addEventListener('click', () => {
+        document.getElementById('modal-gameover').classList.add('hidden');
+        if (state.mode === 'PAUSED') {
+          state.mode = 'RACING';
+        }
+      });
+
+      document.getElementById('btn-race-again').addEventListener('click', startNewRace);
+
+      document.getElementById('btn-gameover-garage').addEventListener('click', () => {
+        document.getElementById('modal-gameover').classList.add('hidden');
+        state.mode = 'GARAGE';
+        document.getElementById('modal-garage').classList.remove('hidden');
+      });
+
+      document.getElementById('btn-clear-scores').addEventListener('click', async () => {
+        await clearAllScores();
+        await renderLeaderboardList();
+      });
+
+      // PWA Install & Files Modal ("تثبيت اللعبة")
+      document.getElementById('btn-open-pwa-files').addEventListener('click', async () => {
+        if (deferredInstallPrompt) {
+          deferredInstallPrompt.prompt();
+          await deferredInstallPrompt.userChoice;
+          deferredInstallPrompt = null;
+        } else {
+          document.getElementById('modal-pwa-info').classList.remove('hidden');
+        }
+      });
+
+      document.getElementById('btn-trigger-native-install').addEventListener('click', async () => {
+        if (deferredInstallPrompt) {
+          deferredInstallPrompt.prompt();
+          await deferredInstallPrompt.userChoice;
+          deferredInstallPrompt = null;
+        }
+      });
+
+      document.getElementById('btn-close-pwa-info').addEventListener('click', () => {
+        document.getElementById('modal-pwa-info').classList.add('hidden');
+      });
+
+      document.getElementById('btn-dl-manifest').addEventListener('click', () => {
+        downloadTextFile('manifest.json', JSON.stringify(MANIFEST_JSON_DATA, null, 2), 'application/manifest+json');
+      });
+
+      document.getElementById('btn-dl-sw').addEventListener('click', () => {
+        downloadTextFile('sw.js', SW_JS_SOURCE, 'application/javascript');
+      });
+    }
+
+    /* ==========================================================================
+       15. OFFLINE PWA MANIFEST & SERVICE WORKER REGISTRATION
+       ========================================================================== */
+    const MANIFEST_JSON_DATA = {
+      name: "بطل الحساب السريع - كراج الأبطال",
+      short_name: "بطل الحساب السريع",
+      description: "لعبة سباق سيارات تعليمية سعودية للحساب السريع للأطفال من ٥ إلى ١٠ سنوات تعمل دون اتصال بالإنترنت",
+      dir: "rtl",
+      lang: "ar",
+      start_url: "./index.html",
+      scope: "./",
+      display: "standalone",
+      orientation: "portrait",
+      background_color: "#0B253A",
+      theme_color: "#0B253A",
+      icons: [
+        {
+          src: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='96' fill='%230B253A'/><rect x='156' y='64' width='200' height='384' rx='64' fill='%23E05A47' stroke='%23E9B44C' stroke-width='16'/><rect x='236' y='64' width='40' height='384' fill='%23F7F1E5'/><rect x='186' y='150' width='140' height='110' rx='28' fill='%230B253A' stroke='%2300A896' stroke-width='8'/><circle cx='256' cy='310' r='44' fill='%23F7F1E5' stroke='%230B253A' stroke-width='8'/><text x='256' y='326' font-family='Tahoma,Arial' font-size='48' font-weight='900' text-anchor='middle' fill='%230B253A'>11</text></svg>",
+          sizes: "512x512",
+          type: "image/svg+xml",
+          purpose: "any maskable"
+        }
+      ]
+    };
+
+    const SW_JS_SOURCE = `const CACHE_NAME = 'speedy-math-hero-sa-v2';
+const OFFLINE_ASSETS = ['./', './index.html', './manifest.json', './sw.js'];
+
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(OFFLINE_ASSETS)).then(() => self.skipWaiting())
+  );
+});
+
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+    ).then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET') return;
+  event.respondWith(
+    caches.match(event.request).then(cached => {
+      return cached || fetch(event.request).then(response => {
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        return response;
+      }).catch(() => caches.match('./index.html'));
+    })
+  );
+});`;
+
+    function downloadTextFile(filename, content, mimeType) {
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function registerOfflinePWA() {
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js').catch(() => {
+            try {
+              const swBlob = new Blob([SW_JS_SOURCE], { type: 'application/javascript' });
+              const swUrl = URL.createObjectURL(swBlob);
+              navigator.serviceWorker.register(swUrl).catch(() => {});
+            } catch (_) {}
+          });
+        });
+      }
+    }
+
+    /* ==========================================================================
+       16. INITIALIZATION ON WINDOW LOAD
+       ========================================================================== */
+    window.onload = function () {
+      resizeCanvases();
+      initGarageUI();
+      bindEvents();
+      generateNextQuestion();
+      updateHUD();
+      registerOfflinePWA();
+      lastFrameTime = performance.now();
+      requestAnimationFrame(gameLoop);
+    };
+  </script>
+</body>
+</html>

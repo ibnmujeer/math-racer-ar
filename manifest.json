@@ -1,0 +1,21 @@
+{
+"name": "بطل الحساب السريع - كراج الأبطال",
+"short_name": "بطل الحساب السريع",
+"description": "لعبة سباق سيارات تعليمية سعودية للحساب السريع للأطفال من ٥ إلى ١٠ سنوات تعمل دون اتصال بالإنترنت",
+"dir": "rtl",
+"lang": "ar",
+"start_url": "./index.html",
+"scope": "./",
+"display": "standalone",
+"orientation": "portrait",
+"background_color": "#0B253A",
+"theme_color": "#0B253A",
+"icons": [
+{
+"src": "data:image/svg+xml;utf8,11",
+"sizes": "512x512",
+"type": "image/svg+xml",
+"purpose": "any maskable"
+}
+]
+}
